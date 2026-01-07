@@ -272,10 +272,112 @@
       return `https://db.netkeiba.com/race/${raceId}/`;
     }
 
-    function generateViewerLinks(parsed, dateStr) {
-      if (!parsed || parsed.isForeign) return null;
+    
+    function isGradedRace(raceName) {
+      const s = (raceName || '');
+      // GI/GII/GIII, G1/G2/G3, JpnI/JpnII/JpnIII, (重賞) 等ざっくり拾う
+      return /(\bGI\b|\bGII\b|\bGIII\b|\bG1\b|\bG2\b|\bG3\b|JpnI|JpnII|JpnIII|重賞)/i.test(s);
+    }
 
-      const dateClean = dateStr.replace(/-/g, '');
+    function yyyymmFromDate(dateStr) {
+      // dateStr: YYYY-MM-DD
+      const m = /^(\d{4})-(\d{2})/.exec(dateStr || '');
+      if (!m) return null;
+      return parseInt(m[1] + m[2], 10);
+    }
+
+    /**
+     * 画質・対応状況のプロファイル
+     * - race/paddock は「HD(=高画質)」と「SD(=低画質)」を両方用意する前提
+     * - multi/patrol/time は、対応してない年代はボタン自体出さない
+     */
+    function getQualityProfile(dateStr, raceName) {
+      const ym = yyyymmFromDate(dateStr);
+      const graded = isGradedRace(raceName);
+
+      // デフォルト（安全側）
+      const profile = {
+        graded,
+        race:    { hd: null, sd: 2 },      // 古いところは q2 が基本
+        paddock: { hd: null, sd: null },   // 基本は無し
+        time:    { hd: null },
+        multi:   { hd: null },
+        patrol:  { hd: null, sd: null }    // 古い重賞で 1(2) がありそうなので sd を持てるように
+      };
+
+      if (!ym) return profile;
+
+      // ～2013/12：レースのみ（quality=2）
+      if (ym < 201401) {
+        return profile;
+      }
+
+      // 2014/01～2014/12：パドック q1 / レース q2
+      if (ym >= 201401 && ym < 201501) {
+        profile.paddock.sd = 1;
+        return profile;
+      }
+
+      // 2015/01～2016/12
+      if (ym >= 201501 && ym < 201701) {
+        profile.paddock.sd = 1;
+        if (graded) {
+          // マルチ：2015は q1、2016は q4（あなた調べ）
+          profile.multi.hd = (ym < 201601) ? 1 : 4;
+          // パトロール：2015/2016は q1（q2が予備で効く可能性）
+          profile.patrol.hd = 2;
+        }
+        return profile;
+      }
+
+      // 2017/01～2020/09
+      if (ym >= 201701 && ym < 202010) {
+        profile.paddock.sd = 1;
+
+        profile.race.hd = graded ? 5 : 4;
+        profile.race.sd = 2;
+
+        if (graded) {
+          profile.multi.hd = 4;
+          profile.patrol.hd = 5;
+        }
+        return profile;
+      }
+
+      // 2020/10～2022/09：全部 パドック q4 / レース q5 / マルチ q4 / パトロール q5
+      if (ym >= 202010 && ym < 202210) {
+        profile.paddock.hd = 4;
+        profile.paddock.sd = 1;
+
+        profile.race.hd = 5;
+        profile.race.sd = 2;
+
+        profile.multi.hd = 4;
+        profile.patrol.hd = 5;
+        return profile;
+      }
+
+      // 2022/10～：上に加えて 時計付 q5
+      if (ym >= 202210) {
+        profile.paddock.hd = 4;
+        profile.paddock.sd = 1;
+
+        profile.race.hd = 5;
+        profile.race.sd = 2;
+
+        profile.time.hd = 5;
+        profile.multi.hd = 4;
+        profile.patrol.hd = 5;
+        return profile;
+      }
+
+      return profile;
+    }
+
+    function buildViewerUrl(parsed, dateStr, kind, quality) {
+      if (!parsed || parsed.isForeign || !quality) return null;
+
+      const dateClean = (dateStr || '').replace(/-/g, '');
       const yy = parsed.year.substring(2, 4);
       const p = parseInt(parsed.place, 10).toString();
 
@@ -292,16 +394,27 @@
       const baseUrl = "https://regist.prc.jp/api/windowopen.aspx?target=race";
       const yearPath = parsed.year;
 
-      return {
-        raceOnly: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=0`,
-        raceOnlyLow: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=2&view=0`,
-        raceTime: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_t&quality=4`,
-        paddock: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_p&quality=4`,
-                paddockSD: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_p&quality=1`,
-patrol: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=1`,
-        multi: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_m&quality=4`
-      };
+      const base = `${baseUrl}/${yearPath}/${dateClean}/${viewerId}`;
+
+      if (kind === 'race') {
+        return `${base}&quality=${quality}&view=0`;
+      }
+      if (kind === 'time') {
+        return `${base}_t&quality=${quality}`;
+      }
+      if (kind === 'paddock') {
+        return `${base}_p&quality=${quality}`;
+      }
+      if (kind === 'multi') {
+        return `${base}_m&quality=${quality}`;
+      }
+      if (kind === 'patrol') {
+        // パトロールは view=1
+        return `${base}&quality=${quality}&view=1`;
+      }
+      return null;
     }
+
 
     function normalizeRank(rank) {
       if (typeof rank === 'number' && Number.isFinite(rank)) return { kind: 'num', n: rank };
@@ -603,7 +716,6 @@ patrol: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=1`,
 
       for (const race of visible) {
         const parsed = race.parsed;
-        const links = generateViewerLinks(parsed, race.date);
 
         const isForeign = parsed && parsed.isForeign;
         const placeName = (!isForeign && parsed) ? (PLACE_MAP[parsed.place] || '') : '海外';
@@ -620,35 +732,56 @@ patrol: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=1`,
         const row = document.createElement('div');
         row.className = "bg-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800 hover:border-green-500/50 transition-colors shadow-sm gap-3";
 
+        
+        const profile = getQualityProfile(race.date, race.raceName);
+
+        // ボタン描画ヘルパ
+        function btnHtml(href, title, classes, innerHtml, disabled, dim) {
+          const baseCls = `btn-icon ${classes} ${dim ? 'opacity-50' : ''} ${disabled ? 'opacity-30 pointer-events-none' : ''}`;
+          if (disabled || !href) {
+            return `<span title="${escapeHtml(title)}" class="${baseCls}">${innerHtml}</span>`;
+          }
+          return `<a href="${href}" target="_blank" rel="noopener" title="${escapeHtml(title)}" class="${baseCls}">${innerHtml}</a>`;
+        }
+
         let linksHtml = '';
-        if (links) {
+        if (parsed && !parsed.isForeign) {
+          // レース：HD / SD 両方（どっちか無い場合は薄く&無効）
+          const raceHdUrl = buildViewerUrl(parsed, race.date, 'race', profile.race.hd);
+          const raceSdUrl = buildViewerUrl(parsed, race.date, 'race', profile.race.sd);
+
+          const paddockHdUrl = buildViewerUrl(parsed, race.date, 'paddock', profile.paddock.hd);
+          const paddockSdUrl = buildViewerUrl(parsed, race.date, 'paddock', profile.paddock.sd);
+
+          const timeUrl = buildViewerUrl(parsed, race.date, 'time', profile.time.hd);
+          const multiUrl = buildViewerUrl(parsed, race.date, 'multi', profile.multi.hd);
+
+          // パトロール：基本は hd を出す。古いところで sd(=q2) がある可能性があればサブも出せる
+          const patrolUrl = buildViewerUrl(parsed, race.date, 'patrol', profile.patrol.hd);
+
+          const netkeibaUrl = (/^\d{12}$/.test(String(race.id))) ? getNetkeibaRaceUrl(String(race.id)) : null;
+
+          // 薄くするルール：
+          // - HDがあるときはSDを薄く（でも押せる）
+          // - HDが無い（=SDのみ）のときはHDを薄く&無効、SDは通常
+          const raceSdDim = !!raceHdUrl && !!raceSdUrl;
+          const padSdDim = !!paddockHdUrl && !!paddockSdUrl;
+
           linksHtml = `
             <div class="flex items-center gap-2 mt-1 sm:mt-0">
-              <a href="${links.raceOnly}" target="_blank" rel="noopener" title="レース映像(高画質)" class="btn-icon bg-blue-600 text-white hover:bg-blue-500">
-                <i class="fas fa-play text-xs"></i>
-              </a>
-              <a href="${links.raceOnlyLow}" target="_blank" rel="noopener" title="レース映像(低画質/予備)" class="btn-icon bg-blue-900 text-blue-200 hover:bg-blue-800">
-                <span class="text-[10px] font-bold">SD</span>
-              </a>
-              <a href="${links.raceTime}" target="_blank" rel="noopener" title="タイム付" class="btn-icon bg-indigo-900 text-indigo-200 hover:bg-indigo-800">
-                <i class="fas fa-stopwatch text-xs"></i>
-              </a>
-              <a href="${links.paddock}" target="_blank" rel="noopener" title="パドック" class="btn-icon bg-green-900 text-green-200 hover:bg-green-800">
-                <i class="fas fa-horse text-xs"></i>
-              </a>
-                            <a href="${links.paddockSD}" target="_blank" rel="noopener" title="パドック(SD)" class="btn-icon bg-green-800 text-green-200 hover:bg-green-700">
-                <span class="text-[10px] font-bold">SD</span>
-              </a>
-<a href="${links.multi}" target="_blank" rel="noopener" title="マルチカメラ" class="btn-icon bg-purple-900 text-purple-200 hover:bg-purple-800">
-                <i class="fas fa-border-all text-xs"></i>
-              </a>
-              <a href="${links.patrol}" target="_blank" rel="noopener" title="パトロール" class="btn-icon bg-gray-700 text-gray-200 hover:bg-gray-600">
-                <i class="fas fa-video text-xs"></i>
-              </a>
-              ${netkeibaUrl ? `
-                <a href="${netkeibaUrl}" target="_blank" rel="noopener" title="netkeiba" class="btn-icon bg-amber-900 text-amber-200 hover:bg-amber-800">
-                  <i class="fas fa-arrow-up-right-from-square text-xs"></i>
-                </a>` : ''}
+              ${btnHtml(netkeibaUrl, 'netkeiba', 'bg-sky-700 text-white hover:bg-sky-600', '<i class="fas fa-arrow-up-right-from-square text-xs"></i>', !netkeibaUrl, false)}
+
+              ${btnHtml(raceHdUrl, 'レース(高画質)', 'bg-red-600 text-white hover:bg-red-500', '<i class="fas fa-play text-xs"></i>', !raceHdUrl, false)}
+              ${btnHtml(raceSdUrl, 'レース(SD)', 'bg-red-600 text-white hover:bg-red-500', '<span class="text-[10px] font-bold">SD</span>', !raceSdUrl, raceSdDim)}
+
+              ${btnHtml(paddockHdUrl, 'パドック(高画質)', 'bg-green-900 text-green-200 hover:bg-green-800', '<i class="fas fa-horse text-xs"></i>', !paddockHdUrl, false)}
+              ${btnHtml(paddockSdUrl, 'パドック(SD)', 'bg-green-800 text-green-200 hover:bg-green-700', '<span class="text-[10px] font-bold">SD</span>', !paddockSdUrl, padSdDim)}
+
+              ${patrolUrl ? btnHtml(patrolUrl, 'パトロール', 'bg-gray-700 text-gray-200 hover:bg-gray-600', '<i class="fas fa-video text-xs"></i>', false, false) : ''}
+
+              ${multiUrl ? btnHtml(multiUrl, (profile.multi.hd && profile.multi.hd <= 2) ? 'マルチ(SD)' : 'マルチカメラ', 'bg-purple-900 text-purple-200 hover:bg-purple-800', '<i class="fas fa-border-all text-xs"></i>', false, false) : ''}
+
+              ${timeUrl ? btnHtml(timeUrl, '時計付', 'bg-indigo-900 text-indigo-200 hover:bg-indigo-800', '<i class="fas fa-stopwatch text-xs"></i>', false, false) : ''}
             </div>
           `;
         } else {
@@ -658,6 +791,7 @@ patrol: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=1`,
             </div>
           `;
         }
+
 
         row.innerHTML = `
           <div class="flex-1 w-full sm:w-auto">
