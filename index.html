@@ -80,65 +80,7 @@
       </div>
     </div>
   </div>
-
-  <!-- Header（固定） -->
-  <header id="appHeader" class="sticky top-0 z-50 bg-[#1a1a1a]/95 backdrop-blur border-b border-gray-700">
-    <div class="max-w-4xl mx-auto px-4 md:px-8 py-3 flex items-center justify-end">
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-
-        <div class="relative flex-1 sm:w-80">
-          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="検索 (レース名など)"
-            class="w-full bg-gray-800 border border-gray-700 rounded-xl pl-9 pr-3 py-2 text-sm text-gray-200 focus:border-green-500 placeholder-gray-600 transition-colors"
-            autocomplete="off"
-          />
-        </div>
-
-        <button
-          id="toggleHorsePickerBtn"
-          class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors flex items-center gap-1"
-          type="button"
-          title="馬を選ぶ"
-          aria-label="馬を選ぶ"
-          aria-expanded="false"
-        >
-          <i class="fas fa-horse"></i>
-          <i id="horsePickerChevron" class="fas fa-chevron-down text-[10px] text-gray-500"></i>
-        </button>
-
-        <button
-          id="starToggleBtn"
-          class="btn-icon bg-gray-800 border border-gray-700 text-sm text-gray-200 hover:border-gray-600"
-          type="button"
-          title="お気に入りのみ"
-          aria-label="お気に入りのみ"
-          aria-pressed="false"
-        >
-          <i id="starToggleIcon" class="far fa-star"></i>
-        </button>
-
-        <div id="selectedHorseBadge" class="text-xs text-gray-400 hidden items-center whitespace-nowrap">
-          <span id="selectedHorseName"></span>
-        </div>
-
-        <button
-          id="clearHorseBtn"
-          class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors hidden whitespace-nowrap"
-          type="button"
-          aria-label="馬フィルター解除"
-          title="馬フィルター解除"
-        >
-          <i class="fas fa-xmark"></i>
-        </button>
-
-      </div>
-    </div>
-  </header>
-
-  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-4">
+  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-4" pb-28">
 
     <!-- List Section（馬選択モーダル中は隠す） -->
     <div id="listSection">
@@ -524,8 +466,8 @@
         listSection?.classList.remove('hidden');
         document.body.classList.remove('overflow-hidden');
 
-        chev?.classList.remove('fa-chevron-up');
-        chev?.classList.add('fa-chevron-down');
+        chev?.classList.remove('fa-chevron-down');
+        chev?.classList.add('fa-chevron-up');
       }
     }
 
@@ -985,5 +927,64 @@
     // Start
     loadData();
   </script>
+
+  <!-- Footer（固定） -->
+  <footer id="appFooter" class="fixed inset-x-0 bottom-0 z-50 bg-[#1a1a1a]/95 backdrop-blur border-t border-gray-700">
+    <div class="max-w-4xl mx-auto px-4 md:px-8 py-3">
+      <div class="flex items-center gap-2 w-full">
+
+        <div class="relative flex-1">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="検索 (レース名など)"
+            class="w-full bg-gray-800 border border-gray-700 rounded-xl pl-9 pr-3 py-2 text-sm text-gray-200 focus:border-green-500 placeholder-gray-600 transition-colors"
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- ☆ と 馬選択を左右入れ替え（☆を左、馬選択を右） -->
+        <button
+          id="starToggleBtn"
+          class="btn-icon bg-gray-800 border border-gray-700 text-sm text-gray-200 hover:border-gray-600"
+          type="button"
+          title="お気に入りのみ"
+          aria-label="お気に入りのみ"
+          aria-pressed="false"
+        >
+          <i id="starToggleIcon" class="far fa-star"></i>
+        </button>
+
+        <button
+          id="toggleHorsePickerBtn"
+          class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors flex items-center gap-1 whitespace-nowrap"
+          type="button"
+          title="馬を選ぶ"
+          aria-label="馬を選ぶ"
+          aria-expanded="false"
+        >
+          <i class="fas fa-horse"></i>
+          <i id="horsePickerChevron" class="fas fa-chevron-up text-[10px] text-gray-500"></i>
+        </button>
+
+        <div id="selectedHorseBadge" class="text-xs text-gray-400 hidden items-center whitespace-nowrap">
+          <span id="selectedHorseName"></span>
+        </div>
+
+        <button
+          id="clearHorseBtn"
+          class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors hidden whitespace-nowrap"
+          type="button"
+          aria-label="馬フィルター解除"
+          title="馬フィルター解除"
+        >
+          <i class="fas fa-xmark"></i>
+        </button>
+
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>
