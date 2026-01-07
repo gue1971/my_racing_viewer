@@ -60,7 +60,12 @@
 
     /* iOSでモーダル内スクロールが気持ちよくなるやつ */
     .momentum-scroll { -webkit-overflow-scrolling: touch; }
-  </style>
+  
+    /* Custom brand-ish colors */
+    .btn-netkeiba { background-color: #3850B0; color: #ffffff; }
+    .btn-race { background-color: #783020; color: #ffffff; } /* 海老茶っぽい */
+
+</style>
 </head>
 
 <body class="min-h-screen">
@@ -769,10 +774,10 @@
 
           linksHtml = `
             <div class="flex items-center gap-2 mt-1 sm:mt-0">
-              ${btnHtml(netkeibaUrl, 'netkeiba', 'bg-sky-700 text-white hover:bg-sky-600', '<i class="fas fa-arrow-up-right-from-square text-xs"></i>', !netkeibaUrl, false)}
+              ${btnHtml(netkeibaUrl, 'netkeiba', 'btn-netkeiba', '<i class="fas fa-arrow-up-right-from-square text-xs"></i>', !netkeibaUrl, false)}
 
-              ${btnHtml(raceHdUrl, 'レース(高画質)', 'bg-red-600 text-white hover:bg-red-500', '<i class="fas fa-play text-xs"></i>', !raceHdUrl, false)}
-              ${btnHtml(raceSdUrl, 'レース(SD)', 'bg-red-600 text-white hover:bg-red-500', '<span class="text-[10px] font-bold">SD</span>', !raceSdUrl, raceSdDim)}
+              ${btnHtml(raceHdUrl, 'レース(高画質)', 'btn-race', '<i class="fas fa-play text-xs"></i>', !raceHdUrl, false)}
+              ${btnHtml(raceSdUrl, 'レース(SD)', 'btn-race', '<span class="text-[10px] font-bold">SD</span>', !raceSdUrl, raceSdDim)}
 
               ${btnHtml(paddockHdUrl, 'パドック(高画質)', 'bg-green-900 text-green-200 hover:bg-green-800', '<i class="fas fa-horse text-xs"></i>', !paddockHdUrl, false)}
               ${btnHtml(paddockSdUrl, 'パドック(SD)', 'bg-green-800 text-green-200 hover:bg-green-700', '<span class="text-[10px] font-bold">SD</span>', !paddockSdUrl, padSdDim)}
