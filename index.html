@@ -297,7 +297,8 @@
         raceOnlyLow: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=2&view=0`,
         raceTime: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_t&quality=4`,
         paddock: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_p&quality=4`,
-        patrol: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=1`,
+                paddockSD: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_p&quality=1`,
+patrol: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=1`,
         multi: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_m&quality=4`
       };
     }
@@ -635,7 +636,10 @@
               <a href="${links.paddock}" target="_blank" rel="noopener" title="パドック" class="btn-icon bg-green-900 text-green-200 hover:bg-green-800">
                 <i class="fas fa-horse text-xs"></i>
               </a>
-              <a href="${links.multi}" target="_blank" rel="noopener" title="マルチカメラ" class="btn-icon bg-purple-900 text-purple-200 hover:bg-purple-800">
+                            <a href="${links.paddockSD}" target="_blank" rel="noopener" title="パドック(SD)" class="btn-icon bg-green-800 text-green-200 hover:bg-green-700">
+                <span class="text-[10px] font-bold">SD</span>
+              </a>
+<a href="${links.multi}" target="_blank" rel="noopener" title="マルチカメラ" class="btn-icon bg-purple-900 text-purple-200 hover:bg-purple-800">
                 <i class="fas fa-border-all text-xs"></i>
               </a>
               <a href="${links.patrol}" target="_blank" rel="noopener" title="パトロール" class="btn-icon bg-gray-700 text-gray-200 hover:bg-gray-600">
