@@ -1,629 +1,846 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Racing Viewer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
-        body { font-family: 'Noto Sans JP', sans-serif; background-color: #1a1a1a; color: #e5e5e5; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Racing Viewer</title>
 
-        .btn-icon { transition: all 0.2s; display: inline-flex; justify-content: center; align-items: center; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; }
-        .btn-icon:hover { transform: translateY(-1px); filter: brightness(1.2); }
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 
-        .rank-badge { min-width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: bold; font-size: 0.8rem; padding: 0 8px; }
-        .rank-1 { background-color: #fbbf24; color: #78350f; } /* 1着: 金 */
-        .rank-2 { background-color: #94a3b8; color: #1e293b; } /* 2着: 銀 */
-        .rank-3 { background-color: #b45309; color: #fffbeb; } /* 3着: 銅 */
-        .rank-other { background-color: #374151; color: #9ca3af; } /* その他 */
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
-        input:focus { outline: none; border-color: #22c55e; box-shadow: 0 0 0 1px #22c55e; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #1a1a1a;
+      color: #e5e5e5;
+    }
 
-        /* iOSでモーダル内スクロールが気持ちよくなるやつ */
-        .momentum-scroll { -webkit-overflow-scrolling: touch; }
-    </style>
+    .btn-icon {
+      transition: all 0.15s;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .btn-icon:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+    .rank-badge {
+      min-width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0 8px;
+      line-height: 1;
+      user-select: none;
+    }
+    .rank-1 { background-color: #fbbf24; color: #78350f; }
+    .rank-2 { background-color: #94a3b8; color: #1e293b; }
+    .rank-3 { background-color: #b45309; color: #fffbeb; }
+    .rank-other { background-color: #374151; color: #d1d5db; }
+
+    input:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 1px #22c55e;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #1a1a1a; }
+    ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+
+    /* iOSでモーダル内スクロールが気持ちよくなるやつ */
+    .momentum-scroll { -webkit-overflow-scrolling: touch; }
+  </style>
 </head>
 
 <body class="min-h-screen">
 
-    <!-- Loading Overlay（最初の不安を消すやつ） -->
-    <div id="loadingOverlay" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/70">
-        <div class="bg-gray-900 border border-gray-700 rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3">
-            <i class="fas fa-spinner fa-spin text-gray-200"></i>
-            <div>
-                <div id="loadingText" class="text-sm font-bold text-gray-200">データ読み込み中…</div>
-                <div class="text-xs text-gray-400 mt-0.5">（初回は少し時間かかることがあるよ）</div>
-            </div>
-        </div>
+  <!-- Loading Overlay（初回の不安を消す） -->
+  <div id="loadingOverlay" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/70">
+    <div class="bg-gray-900 border border-gray-700 rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3">
+      <i class="fas fa-spinner fa-spin text-gray-200"></i>
+      <div>
+        <div id="loadingText" class="text-sm font-bold text-gray-200">データ読み込み中…</div>
+        <div class="text-xs text-gray-400 mt-0.5">（初回は少し時間かかることがあるよ）</div>
+      </div>
     </div>
+  </div>
 
-    <!-- Header（固定） -->
-    <header id="appHeader" class="sticky top-0 z-50 bg-[#1a1a1a]/95 backdrop-blur border-b border-gray-700">
-        <div class="max-w-4xl mx-auto px-4 md:px-8 py-3 flex items-center justify-end">
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-                <div class="relative flex-1 sm:w-80">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
-                    <input
-                        type="text"
-                        id="searchInput"
-                        placeholder="検索 (レース名など)"
-                        class="w-full bg-gray-800 border border-gray-700 rounded pl-9 pr-3 py-2 text-sm text-gray-200 focus:border-green-500 placeholder-gray-600 transition-colors"
-                        oninput="requestRender()"
-                    >
-                </div>
+  <!-- Header（固定） -->
+  <header id="appHeader" class="sticky top-0 z-50 bg-[#1a1a1a]/95 backdrop-blur border-b border-gray-700">
+    <div class="max-w-4xl mx-auto px-4 md:px-8 py-3 flex items-center justify-end">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
 
-                <button
-                    id="toggleHorsePickerBtn"
-                    class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors flex items-center gap-1"
-                    onclick="toggleHorsePicker()"
-                    title="馬を選ぶ" aria-label="馬を選ぶ" aria-expanded="false"
-                >
-                    <i class="fas fa-horse"></i>
-                    <i id="horsePickerChevron" class="fas fa-chevron-down text-[10px] text-gray-500"></i>
-                </button>
-
-                <button
-                    id="starToggleBtn"
-                    class="btn-icon bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 hover:border-gray-600 transition-colors flex items-center"
-                    onclick="toggleStarOnly()"
-                    title="お気に入りのみ" aria-label="お気に入りのみ" aria-pressed="false"
-                >
-                    <i id="starToggleIcon" class="far fa-star"></i>
-                </button>
-
-                <div id="selectedHorseBadge" class="text-xs text-gray-400 hidden items-center whitespace-nowrap">
-                    <span id="selectedHorseName"></span>
-                </div>
-
-                <button
-                    id="clearHorseBtn"
-                    class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors hidden whitespace-nowrap"
-                    onclick="clearHorseFilter()"
-                    aria-label="馬フィルター解除"
-                >
-                    <i class="fas fa-xmark"></i>
-                </button>
-            </div>
+        <div class="relative flex-1 sm:w-80">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="検索 (レース名など)"
+            class="w-full bg-gray-800 border border-gray-700 rounded-xl pl-9 pr-3 py-2 text-sm text-gray-200 focus:border-green-500 placeholder-gray-600 transition-colors"
+            autocomplete="off"
+          />
         </div>
-    </header>
 
-    <main class="max-w-4xl mx-auto px-4 md:px-8 pt-4">
-        <!-- List Section（ここをまとめて非表示にする） -->
-        <div id="listSection">
-            <div id="raceList" class="space-y-3 pb-12"></div>
-            <div id="emptyState" class="text-center py-12 text-gray-600 hidden">
-                <p class="text-sm">データが見つかりません</p>
-            </div>
+        <button
+          id="toggleHorsePickerBtn"
+          class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors flex items-center gap-1"
+          type="button"
+          title="馬を選ぶ"
+          aria-label="馬を選ぶ"
+          aria-expanded="false"
+        >
+          <i class="fas fa-horse"></i>
+          <i id="horsePickerChevron" class="fas fa-chevron-down text-[10px] text-gray-500"></i>
+        </button>
+
+        <button
+          id="starToggleBtn"
+          class="btn-icon bg-gray-800 border border-gray-700 text-sm text-gray-200 hover:border-gray-600"
+          type="button"
+          title="お気に入りのみ"
+          aria-label="お気に入りのみ"
+          aria-pressed="false"
+        >
+          <i id="starToggleIcon" class="far fa-star"></i>
+        </button>
+
+        <div id="selectedHorseBadge" class="text-xs text-gray-400 hidden items-center whitespace-nowrap">
+          <span id="selectedHorseName"></span>
         </div>
-    </main>
 
-    <!-- Horse Picker Modal（下に貼り付く＋内部スクロール） -->
-    <div id="horsePickerModal" class="fixed inset-0 z-40 hidden" aria-hidden="true">
-        <!-- backdrop -->
-        <div class="absolute inset-0 bg-black/60" onclick="closeHorsePicker()"></div>
+        <button
+          id="clearHorseBtn"
+          class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors hidden whitespace-nowrap"
+          type="button"
+          aria-label="馬フィルター解除"
+          title="馬フィルター解除"
+        >
+          <i class="fas fa-xmark"></i>
+        </button>
 
-        <!-- panel -->
-        <div class="absolute inset-x-0 bottom-0">
-            <div class="max-w-4xl mx-auto px-0 md:px-8">
-                <div class="bg-gray-900 border border-gray-700 rounded-t-2xl shadow-2xl max-h-[82vh] flex flex-col">
-                    <div class="px-4 md:px-0 py-3 border-b border-gray-700 flex items-center justify-between">
-                        <div class="text-sm font-bold text-gray-200 flex items-center gap-2">
-                            <i class="fas fa-horse"></i>
-                            <span>馬を選ぶ</span>
-                        </div>
-                        <button class="btn-icon bg-gray-800 border border-gray-700 hover:border-gray-600" onclick="closeHorsePicker()" aria-label="閉じる">
-                            <i class="fas fa-xmark"></i>
-                        </button>
-                    </div>
-
-                    <div id="horsePickerScroll" class="px-4 md:px-0 py-4 overflow-y-auto overscroll-contain momentum-scroll">
-                        <div id="horsePicker" class="space-y-5"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+  </header>
 
+  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-4">
 
-    <!-- Logic -->
-    <script>
-        // 外部データ（馬ごとのミニマル構造）を読み込み、従来のrawData形式に展開する
-        let rawData = [];
-        let horsesData = [];
-        let selectedHorseName = null;
-        let horsePickerOpen = false;
-        let horsePickerBuilt = false;
-        let showStarOnly = false; // 初期は一覧性重視で開いておく
+    <!-- List Section（馬選択モーダル中は隠す） -->
+    <div id="listSection">
+      <div class="flex items-center justify-between mb-3">
+        <div id="listHint" class="text-xs text-gray-500"></div>
+        <button id="scrollTopBtn" class="hidden text-xs text-gray-400 hover:text-gray-200" type="button">
+          <i class="fas fa-arrow-up mr-1"></i>先頭へ
+        </button>
+      </div>
 
-        let races = [];
+      <div id="raceList" class="space-y-3"></div>
 
-        const PLACE_MAP = {
-            '01': '札幌', '02': '函館', '03': '福島', '04': '新潟', '05': '東京',
-            '06': '中山', '07': '中京', '08': '京都', '09': '阪神', '10': '小倉'
+      <!-- もっと見る -->
+      <div id="moreWrap" class="hidden pt-4 pb-12 flex items-center justify-center gap-2">
+        <button id="moreBtn"
+          class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-sm text-gray-200 hover:border-gray-600 transition-colors"
+          type="button"
+        >
+          もっと見る
+        </button>
+        <button id="allBtn"
+          class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-sm text-gray-200 hover:border-gray-600 transition-colors"
+          type="button"
+        >
+          全件
+        </button>
+        <div id="shownCount" class="text-xs text-gray-500 ml-1"></div>
+      </div>
+
+      <div id="emptyState" class="text-center py-12 text-gray-600 hidden">
+        <p class="text-sm">データが見つかりません</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Horse Picker Modal（ボトムシート） -->
+  <div id="horsePickerModal" class="fixed inset-0 z-40 hidden" aria-hidden="true">
+    <div class="absolute inset-0 bg-black/60" id="horsePickerBackdrop"></div>
+
+    <div class="absolute inset-x-0 bottom-0">
+      <div class="max-w-4xl mx-auto px-0 md:px-8">
+        <div class="bg-gray-900 border border-gray-700 rounded-t-2xl shadow-2xl max-h-[82vh] flex flex-col">
+          <div class="px-4 md:px-0 py-3 border-b border-gray-700 flex items-center justify-between">
+            <div class="text-sm font-bold text-gray-200 flex items-center gap-2">
+              <i class="fas fa-horse"></i>
+              <span>馬を選ぶ</span>
+            </div>
+            <button class="btn-icon bg-gray-800 border border-gray-700 hover:border-gray-600" type="button" id="closeHorsePickerBtn" aria-label="閉じる">
+              <i class="fas fa-xmark"></i>
+            </button>
+          </div>
+
+          <div id="horsePickerScroll" class="px-4 md:px-0 py-4 overflow-y-auto overscroll-contain momentum-scroll">
+            <div id="horsePicker" class="space-y-5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================
+    // Settings (5000件想定)
+    // ==========================
+    const DEFAULT_LIMIT = 50;   // デフォルト表示は直近50件
+    const MORE_STEP = 100;      // 「もっと見る」で+100件ずつ
+    const SEARCH_DEBOUNCE_MS = 220; // 150-250msの範囲（中間くらい）
+
+    const PLACE_MAP = {
+      '01': '札幌', '02': '函館', '03': '福島', '04': '新潟', '05': '東京',
+      '06': '中山', '07': '中京', '08': '京都', '09': '阪神', '10': '小倉'
+    };
+
+    // ==========================
+    // State
+    // ==========================
+    let horsesData = [];
+    let rawData = [];
+
+    let racesSorted = [];     // 日付降順で固定（以後ソートしない）
+    let selectedHorseName = null;
+    let showStarOnly = false;
+
+    let horsePickerOpen = false;
+    let horsePickerBuilt = false;
+
+    let displayLimit = DEFAULT_LIMIT;
+    let lastFilterKey = '';
+
+    // 検索系
+    let isComposing = false;
+    let searchTimer = null;
+
+    // ==========================
+    // Helpers
+    // ==========================
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function showLoading(show, text) {
+      const overlay = document.getElementById('loadingOverlay');
+      const textEl = document.getElementById('loadingText');
+      if (!overlay) return;
+      if (typeof text === 'string' && textEl) textEl.textContent = text;
+      overlay.classList.toggle('hidden', !show);
+    }
+
+    function getFetchCacheMode() {
+      const isLocal = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+      return isLocal ? 'no-store' : 'force-cache';
+    }
+
+    function parseNetkeibaID(fullId) {
+      if (!fullId) return { isForeign: true };
+      const s = String(fullId);
+      if (/^\d{12}$/.test(s)) {
+        return {
+          isForeign: false,
+          year: s.substring(0, 4),
+          place: s.substring(4, 6),
+          kai: s.substring(6, 8),
+          day: s.substring(8, 10),
+          race: s.substring(10, 12)
         };
+      }
+      return { isForeign: true, rawId: s };
+    }
 
-        // renderの連打を抑える（検索入力が重くなりがちなので）
-        let renderTimer = null;
-        function requestRender() {
-            if (horsePickerOpen) return; // 選択画面中は一覧が見えんけぇ、無駄renderしない
-            clearTimeout(renderTimer);
-            renderTimer = setTimeout(() => renderList(), 80);
+    function getNetkeibaRaceUrl(raceId) {
+      return `https://db.netkeiba.com/race/${raceId}/`;
+    }
+
+    function generateViewerLinks(parsed, dateStr) {
+      if (!parsed || parsed.isForeign) return null;
+
+      const dateClean = dateStr.replace(/-/g, '');
+      const yy = parsed.year.substring(2, 4);
+      const p = parseInt(parsed.place, 10).toString();
+
+      const kNum = parseInt(parsed.kai, 10);
+      const k = (kNum >= 10) ? kNum.toString(16) : kNum.toString();
+
+      const dNum = parseInt(parsed.day, 10);
+      const d = (dNum >= 10) ? dNum.toString(16) : dNum.toString();
+
+      const rNum = parseInt(parsed.race, 10);
+      const rCode = (rNum >= 10) ? rNum.toString(16) : rNum.toString();
+
+      const viewerId = `${yy}${p}${k}${d}${rCode}`;
+      const baseUrl = "https://regist.prc.jp/api/windowopen.aspx?target=race";
+      const yearPath = parsed.year;
+
+      return {
+        raceOnly: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=0`,
+        raceOnlyLow: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=2&view=0`,
+        raceTime: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_t&quality=4`,
+        paddock: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_p&quality=4`,
+        patrol: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=1`,
+        multi: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_m&quality=4`
+      };
+    }
+
+    function normalizeRank(rank) {
+      if (typeof rank === 'number' && Number.isFinite(rank)) return { kind: 'num', n: rank };
+      if (typeof rank === 'string') {
+        const t = rank.trim();
+        if (/^\d+$/.test(t)) return { kind: 'num', n: parseInt(t, 10) };
+        if (t.length > 0) return { kind: 'text', text: t };
+      }
+      return { kind: 'none' };
+    }
+
+    function getRankClass(n) {
+      if (n === 1) return 'rank-1';
+      if (n === 2) return 'rank-2';
+      if (n === 3) return 'rank-3';
+      return 'rank-other';
+    }
+
+    function getBirthYearFromHorse(h) {
+      const id = (h && typeof h.horseId === 'string') ? h.horseId : '';
+      if (id.length < 4) return null;
+      const y = parseInt(id.slice(0, 4), 10);
+      return Number.isFinite(y) ? y : null;
+    }
+
+    function getFilterKey(searchVal) {
+      return `${selectedHorseName ?? ''}|${showStarOnly ? 1 : 0}|${searchVal}`;
+    }
+
+    // ==========================
+    // UI Updates
+    // ==========================
+    function updateStarToggleUI() {
+      const btn = document.getElementById('starToggleBtn');
+      const icon = document.getElementById('starToggleIcon');
+      if (!btn || !icon) return;
+
+      if (showStarOnly) {
+        btn.setAttribute('aria-pressed', 'true');
+        icon.classList.remove('far');
+        icon.classList.add('fas', 'text-yellow-400');
+      } else {
+        btn.setAttribute('aria-pressed', 'false');
+        icon.classList.remove('fas', 'text-yellow-400');
+        icon.classList.add('far');
+      }
+    }
+
+    function updateSelectedHorseUI() {
+      const badge = document.getElementById('selectedHorseBadge');
+      const nameEl = document.getElementById('selectedHorseName');
+      const clearBtn = document.getElementById('clearHorseBtn');
+
+      if (!badge || !nameEl || !clearBtn) return;
+
+      if (selectedHorseName) {
+        badge.classList.remove('hidden');
+        badge.classList.add('inline-flex');
+        clearBtn.classList.remove('hidden');
+        nameEl.textContent = selectedHorseName;
+      } else {
+        badge.classList.add('hidden');
+        badge.classList.remove('inline-flex');
+        clearBtn.classList.add('hidden');
+        nameEl.textContent = '';
+      }
+    }
+
+    function openHorsePicker() {
+      horsePickerOpen = true;
+      if (!horsePickerBuilt) {
+        buildHorsePicker();
+        horsePickerBuilt = true;
+      }
+      updateHorsePickerUI();
+    }
+
+    function closeHorsePicker() {
+      horsePickerOpen = false;
+      updateHorsePickerUI();
+    }
+
+    function updateHorsePickerUI() {
+      const modal = document.getElementById('horsePickerModal');
+      const chev = document.getElementById('horsePickerChevron');
+      const btn = document.getElementById('toggleHorsePickerBtn');
+      const listSection = document.getElementById('listSection');
+
+      btn?.setAttribute('aria-expanded', horsePickerOpen ? 'true' : 'false');
+
+      if (horsePickerOpen) {
+        modal?.classList.remove('hidden');
+        modal?.setAttribute('aria-hidden', 'false');
+        listSection?.classList.add('hidden');
+        document.body.classList.add('overflow-hidden');
+
+        chev?.classList.remove('fa-chevron-down');
+        chev?.classList.add('fa-chevron-up');
+      } else {
+        modal?.classList.add('hidden');
+        modal?.setAttribute('aria-hidden', 'true');
+        listSection?.classList.remove('hidden');
+        document.body.classList.remove('overflow-hidden');
+
+        chev?.classList.remove('fa-chevron-up');
+        chev?.classList.add('fa-chevron-down');
+      }
+    }
+
+    function clearHorseFilter() {
+      selectedHorseName = null;
+      updateSelectedHorseUI();
+      scheduleRender(true);
+    }
+
+    function setHorseFilterByName(name) {
+      selectedHorseName = name || null;
+      updateSelectedHorseUI();
+      closeHorsePicker();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scheduleRender(true);
+    }
+
+    // ==========================
+    // Debounced render + IME
+    // ==========================
+    function scheduleRender(forceImmediate = false) {
+      if (horsePickerOpen) return;
+
+      if (forceImmediate) {
+        clearTimeout(searchTimer);
+        renderList();
+        return;
+      }
+
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        // IME変換中は描画しない（compositionendで呼ぶ）
+        if (isComposing) return;
+        renderList();
+      }, SEARCH_DEBOUNCE_MS);
+    }
+
+    // ==========================
+    // Horse Picker (lazy build)
+    // ==========================
+    function buildHorsePicker() {
+      const pickerEl = document.getElementById('horsePicker');
+      if (!pickerEl) return;
+
+      const groups = new Map(); // year -> horses[]
+      for (const h of (horsesData || [])) {
+        const y = getBirthYearFromHorse(h);
+        const key = (y === null) ? '不明' : String(y);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(h);
+      }
+
+      const years = Array.from(groups.keys()).sort((a, b) => {
+        if (a === '不明') return 1;
+        if (b === '不明') return -1;
+        return parseInt(b, 10) - parseInt(a, 10); // 若い年が上
+      });
+
+      pickerEl.innerHTML = '';
+
+      for (const y of years) {
+        const hs = groups.get(y) || [];
+        hs.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
+
+        const section = document.createElement('section');
+        section.className = 'space-y-2';
+
+        const title = document.createElement('div');
+        title.className = 'flex items-baseline justify-between';
+        title.innerHTML = `
+          <div class="text-sm font-bold text-gray-300">
+            ${escapeHtml(y)}<span class="text-xs font-normal text-gray-500 ml-1">(${hs.length})</span>
+          </div>
+        `;
+
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-2';
+
+        for (const h of hs) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 hover:border-gray-600 transition-colors text-left min-h-[44px] truncate';
+          btn.textContent = h.name || '';
+          btn.addEventListener('click', () => setHorseFilterByName(h.name || ''));
+          grid.appendChild(btn);
         }
 
-        function showLoading(show, text) {
-            const overlay = document.getElementById('loadingOverlay');
-            const textEl = document.getElementById('loadingText');
-            if (!overlay) return;
-            if (typeof text === 'string' && textEl) textEl.textContent = text;
-            if (show) overlay.classList.remove('hidden');
-            else overlay.classList.add('hidden');
+        section.appendChild(title);
+        section.appendChild(grid);
+        pickerEl.appendChild(section);
+      }
+    }
+
+    // ==========================
+    // Render
+    // ==========================
+    function renderList() {
+      const listEl = document.getElementById('raceList');
+      const emptyEl = document.getElementById('emptyState');
+      const moreWrap = document.getElementById('moreWrap');
+      const shownCount = document.getElementById('shownCount');
+      const listHint = document.getElementById('listHint');
+      const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+      if (!listEl || !emptyEl) return;
+
+      const searchInput = document.getElementById('searchInput');
+      const searchVal = (searchInput?.value || '').toLowerCase().trim();
+
+      const isDefaultView = !selectedHorseName && !showStarOnly && !searchVal;
+
+      // フィルタ条件が変わったら、デフォルト時の表示件数を初期化
+      const filterKey = getFilterKey(searchVal);
+      if (filterKey !== lastFilterKey) {
+        lastFilterKey = filterKey;
+        displayLimit = DEFAULT_LIMIT;
+      }
+
+      // ヒント表示
+      if (listHint) {
+        if (isDefaultView) {
+          listHint.textContent = `直近のレース（最新順）`;
+        } else {
+          const parts = [];
+          if (selectedHorseName) parts.push(`馬: ${selectedHorseName}`);
+          if (searchVal) parts.push(`検索: ${searchVal}`);
+          if (showStarOnly) parts.push('お気に入りのみ');
+          listHint.textContent = parts.join(' / ') || '';
         }
+      }
 
-        function getFetchCacheMode() {
-            // ローカル開発は常に最新が欲しい → no-store
-            // GitHub Pages等の公開はキャッシュOK → force-cache
-            const isLocal = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-            return isLocal ? 'no-store' : 'force-cache';
-        }
+      // 先頭へボタンは、ある程度スクロールしたら出す
+      if (scrollTopBtn) {
+        const show = window.scrollY > 600;
+        scrollTopBtn.classList.toggle('hidden', !show);
+      }
 
-        async function loadData() {
-            try {
-                showLoading(true, 'データ読み込み中…');
+      // 空にして作り直し（件数制限するのでコストは抑えられる）
+      listEl.innerHTML = '';
+      emptyEl.classList.add('hidden');
 
-                const res = await fetch('horsesData.json', { cache: getFetchCacheMode() });
-                if (!res.ok) throw new Error(`Failed to load horsesData.json: ${res.status}`);
-                const horses = await res.json();
+      let total = 0;
+      let visible = [];
 
-                horsesData = Array.isArray(horses) ? horses
-                    : (horses && Array.isArray(horses.horses) ? horses.horses : []);
+      if (isDefaultView) {
+        total = racesSorted.length;
+        const lim = (displayLimit === Infinity) ? total : Math.min(displayLimit, total);
+        visible = racesSorted.slice(0, lim);
+      } else {
+        // 絞り込み表示は「全部出す」方針
+        const keywords = searchVal ? searchVal.split(/\s+/).filter(Boolean) : [];
 
-                rawData = (horsesData || []).flatMap(h => {
-                    const horseName = h.name;
-                    const races = Array.isArray(h.races) ? h.races : [];
-                    return races.map(r => ({
-                        id: r.id ?? r.raceId ?? r.raceID,
-                        date: r.date,
-                        raceName: r.raceName,
-                        horseName,
-                        rank: r.rank,
-                        ...(r.star === true ? { star: true } : {})
-                    }));
-                }).filter(r => r.id && r.date && r.raceName && r.horseName);
+        const filtered = [];
+        for (const race of racesSorted) {
+          if (selectedHorseName && race.horseName !== selectedHorseName) continue;
+          if (showStarOnly && race.star !== true) continue;
 
-                init();
-            } catch (e) {
-                console.error(e);
-                showLoading(false);
-                const emptyEl = document.getElementById('emptyState');
-                if (emptyEl) {
-                    emptyEl.classList.remove('hidden');
-                    emptyEl.innerHTML = '<p class="text-sm">データの読み込みに失敗しました</p><p class="text-xs mt-2 text-gray-500">※ file:// で開いとる場合は fetch が失敗することがあるけぇ、ローカルサーバ（例: VS Code の Live Server / python -m http.server）で開いてみてね。</p>';
-                }
+          if (keywords.length) {
+            // 事前に作ったsearchTextを使う
+            let ok = true;
+            const t = race.searchText || '';
+            for (const k of keywords) {
+              if (!t.includes(k)) { ok = false; break; }
             }
+            if (!ok) continue;
+          }
+
+          filtered.push(race);
         }
 
-        loadData();
+        total = filtered.length;
+        visible = filtered;
+      }
 
-        function init() {
-            showLoading(true, '一覧を描画中…');
+      if (total === 0) {
+        emptyEl.classList.remove('hidden');
+        moreWrap?.classList.add('hidden');
+        if (shownCount) shownCount.textContent = '';
+        return;
+      }
 
-            races = rawData.map(item => ({ ...item, parsed: parseNetkeibaID(item.id) }));
+      // もっと見るUI
+      if (isDefaultView && total > visible.length) {
+        moreWrap?.classList.remove('hidden');
+        if (shownCount) shownCount.textContent = `${visible.length} / ${total}`;
+      } else {
+        moreWrap?.classList.add('hidden');
+        if (shownCount) shownCount.textContent = '';
+      }
 
-            // 馬リスト（年別のボタン生成）は初回オープン時まで遅延させる
-            horsePickerBuilt = false;
+      const showHorseLabelInRows = (selectedHorseName === null);
+      const frag = document.createDocumentFragment();
 
-            updateHorsePickerUI();
-            updateSelectedHorseUI();
-            updateStarToggleUI();
+      for (const race of visible) {
+        const parsed = race.parsed;
+        const links = generateViewerLinks(parsed, race.date);
 
-            // 先にoverlayを見せた上で描画（体感が良い）
-            requestAnimationFrame(() => {
-                renderList();
-                showLoading(false);
-            });
+        const isForeign = parsed && parsed.isForeign;
+        const placeName = (!isForeign && parsed) ? (PLACE_MAP[parsed.place] || '') : '海外';
+        const rNum = (!isForeign && parsed) ? (parseInt(parsed.race, 10) + 'R') : '';
 
-            // ESCで閉じる
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && horsePickerOpen) closeHorsePicker();
-            });
+        const horseChipHtml = showHorseLabelInRows
+          ? `<button type="button"
+                class="horse-chip text-xs px-2 py-0.5 rounded-full border border-gray-600 ml-1 text-gray-200 hover:border-green-500 hover:text-green-300 transition-colors"
+                data-horse="${escapeHtml(race.horseName)}">${escapeHtml(race.horseName)}</button>`
+          : '';
+
+        const netkeibaUrl = (/^\d{12}$/.test(String(race.id))) ? getNetkeibaRaceUrl(String(race.id)) : null;
+
+        const row = document.createElement('div');
+        row.className = "bg-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800 hover:border-green-500/50 transition-colors shadow-sm gap-3";
+
+        let linksHtml = '';
+        if (links) {
+          linksHtml = `
+            <div class="flex items-center gap-1 mt-1 sm:mt-0">
+              <a href="${links.raceOnly}" target="_blank" rel="noopener" title="レース映像(高画質)" class="btn-icon bg-blue-600 text-white hover:bg-blue-500">
+                <i class="fas fa-play text-xs"></i>
+              </a>
+              <a href="${links.raceOnlyLow}" target="_blank" rel="noopener" title="レース映像(低画質/予備)" class="btn-icon bg-blue-900 text-blue-200 hover:bg-blue-800">
+                <span class="text-[10px] font-bold">SD</span>
+              </a>
+              <a href="${links.raceTime}" target="_blank" rel="noopener" title="タイム付" class="btn-icon bg-indigo-900 text-indigo-200 hover:bg-indigo-800">
+                <i class="fas fa-stopwatch text-xs"></i>
+              </a>
+              <a href="${links.paddock}" target="_blank" rel="noopener" title="パドック" class="btn-icon bg-green-900 text-green-200 hover:bg-green-800">
+                <i class="fas fa-horse text-xs"></i>
+              </a>
+              <a href="${links.multi}" target="_blank" rel="noopener" title="マルチカメラ" class="btn-icon bg-purple-900 text-purple-200 hover:bg-purple-800">
+                <i class="fas fa-border-all text-xs"></i>
+              </a>
+              <a href="${links.patrol}" target="_blank" rel="noopener" title="パトロール" class="btn-icon bg-gray-700 text-gray-200 hover:bg-gray-600">
+                <i class="fas fa-video text-xs"></i>
+              </a>
+              ${netkeibaUrl ? `
+                <a href="${netkeibaUrl}" target="_blank" rel="noopener" title="netkeiba" class="btn-icon bg-amber-900 text-amber-200 hover:bg-amber-800">
+                  <i class="fas fa-arrow-up-right-from-square text-xs"></i>
+                </a>` : ''}
+            </div>
+          `;
+        } else {
+          linksHtml = `
+            <div class="flex items-center gap-2 mt-1 sm:mt-0 opacity-60 select-none">
+              <span class="text-xs text-gray-500"><i class="fas fa-ban mr-1"></i>映像リンクなし</span>
+            </div>
+          `;
         }
 
-        function getBirthYearFromHorse(h) {
-            const id = (h && typeof h.horseId === 'string') ? h.horseId : '';
-            if (id.length < 4) return null;
-            const y = parseInt(id.slice(0, 4), 10);
-            return Number.isFinite(y) ? y : null;
-        }
+        row.innerHTML = `
+          <div class="flex-1 w-full sm:w-auto">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span class="text-gray-400 text-xs font-mono">${escapeHtml(race.date.replace(/-/g, '/'))}</span>
+              <span class="text-gray-500 text-xs font-bold">${escapeHtml(placeName)}${rNum ? escapeHtml(rNum) : ''}</span>
+              ${horseChipHtml}
+            </div>
 
-        function toggleHorsePicker() {
-            horsePickerOpen = !horsePickerOpen;
-            if (horsePickerOpen && !horsePickerBuilt) {
-                buildHorsePicker();
-                horsePickerBuilt = true;
-            }
-            updateHorsePickerUI();
-        }
-
-        function closeHorsePicker() {
-            horsePickerOpen = false;
-            updateHorsePickerUI();
-        }
-
-        function updateHorsePickerUI() {
-            const modal = document.getElementById('horsePickerModal');
-            const chev = document.getElementById('horsePickerChevron');
-            const btn = document.getElementById('toggleHorsePickerBtn');
-            const listSection = document.getElementById('listSection');
-
-            if (btn) btn.setAttribute('aria-expanded', horsePickerOpen ? 'true' : 'false');
-
-            if (horsePickerOpen) {
-                if (modal) {
-                    modal.classList.remove('hidden');
-                    modal.setAttribute('aria-hidden', 'false');
+            <div class="flex items-center gap-3">
+              ${(() => {
+                const rk = normalizeRank(race.rank);
+                if (rk.kind === 'num') {
+                  return `<div class="${getRankClass(rk.n)} rank-badge shadow-sm">
+                    ${rk.n}<span class="text-[0.6rem] ml-0.5 font-normal">着</span>
+                  </div>`;
                 }
-                if (listSection) listSection.classList.add('hidden');
-                document.body.classList.add('overflow-hidden');
-
-                if (chev) {
-                    chev.classList.remove('fa-chevron-down');
-                    chev.classList.add('fa-chevron-up');
+                if (rk.kind === 'text') {
+                  return `<div class="rank-other rank-badge shadow-sm">${escapeHtml(rk.text)}</div>`;
                 }
-            } else {
-                if (modal) {
-                    modal.classList.add('hidden');
-                    modal.setAttribute('aria-hidden', 'true');
-                }
-                if (listSection) listSection.classList.remove('hidden');
-                document.body.classList.remove('overflow-hidden');
+                return '';
+              })()}
+              <span class="text-white font-bold text-lg leading-tight">
+                ${escapeHtml(race.raceName)}
+                ${race.star === true ? ' <i class="fas fa-star text-yellow-400 ml-1"></i>' : ''}
+              </span>
+            </div>
+          </div>
+          ${linksHtml}
+        `;
 
-                if (chev) {
-                    chev.classList.remove('fa-chevron-up');
-                    chev.classList.add('fa-chevron-down');
-                }
-            }
+        const chip = row.querySelector('.horse-chip');
+        if (chip) {
+          chip.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setHorseFilterByName(race.horseName);
+          });
         }
 
-        function clearHorseFilter() {
-            selectedHorseName = null;
-            updateSelectedHorseUI();
-            renderList();
+        frag.appendChild(row);
+      }
+
+      listEl.appendChild(frag);
+    }
+
+    // ==========================
+    // Data load
+    // ==========================
+    async function loadData() {
+      try {
+        showLoading(true, 'データ読み込み中…');
+
+        const res = await fetch('horsesData.json', { cache: getFetchCacheMode() });
+        if (!res.ok) throw new Error(`Failed to load horsesData.json: ${res.status}`);
+
+        const horses = await res.json();
+        horsesData = Array.isArray(horses) ? horses : (horses && Array.isArray(horses.horses) ? horses.horses : []);
+
+        // horsesData -> rawData（horseNameを付けたレース配列）
+        rawData = (horsesData || []).flatMap(h => {
+          const horseName = h.name;
+          const rs = Array.isArray(h.races) ? h.races : [];
+          return rs.map(r => ({
+            id: r.id ?? r.raceId ?? r.raceID,
+            date: r.date,
+            raceName: r.raceName,
+            horseName,
+            rank: r.rank,
+            ...(r.star === true ? { star: true } : {})
+          }));
+        }).filter(r => r.id && r.date && r.raceName && r.horseName);
+
+        init();
+      } catch (e) {
+        console.error(e);
+        showLoading(false);
+        const emptyEl = document.getElementById('emptyState');
+        if (emptyEl) {
+          emptyEl.classList.remove('hidden');
+          emptyEl.innerHTML = `
+            <p class="text-sm">データの読み込みに失敗しました</p>
+            <p class="text-xs mt-2 text-gray-500">
+              ※ file:// で開いとる場合は fetch が失敗することがあるけぇ、
+              ローカルサーバ（例: VS Code Live Server / python -m http.server）で開いてみてね。
+            </p>`;
         }
+      }
+    }
 
-        function setHorseFilterByName(name) {
-            selectedHorseName = name || null;
-            updateSelectedHorseUI();
-            // 選んだら閉じる
-            closeHorsePicker();
-            // レース一覧先頭へ（スマホの体験が良い）
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            renderList();
-        }
+    function init() {
+      showLoading(true, '一覧を準備中…');
 
-        function toggleStarOnly() {
-            showStarOnly = !showStarOnly;
-            updateStarToggleUI();
-            renderList();
-        }
+      // 全件を一度だけ加工して、検索用テキストも作る
+      const tmp = rawData.map(item => {
+        const parsed = parseNetkeibaID(item.id);
+        const placeName = (!parsed.isForeign) ? (PLACE_MAP[parsed.place] || '') : '海外';
+        const searchText = `${item.date} ${item.raceName || ''} ${item.horseName || ''} ${placeName}`.toLowerCase();
+        return { ...item, parsed, searchText };
+      });
 
-        function updateStarToggleUI() {
-            const btn = document.getElementById('starToggleBtn');
-            const icon = document.getElementById('starToggleIcon');
-            if (!btn || !icon) return;
+      // ソートは一回だけ（以後はこの順でフィルタ）
+      racesSorted = tmp.sort((a, b) => String(b.date).localeCompare(String(a.date)));
 
-            if (showStarOnly) {
-                btn.setAttribute('aria-pressed', 'true');
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                icon.classList.add('text-yellow-400');
-            } else {
-                btn.setAttribute('aria-pressed', 'false');
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                icon.classList.remove('text-yellow-400');
-            }
-        }
+      // UI初期化
+      updateSelectedHorseUI();
+      updateStarToggleUI();
 
-        function updateSelectedHorseUI() {
-            const badge = document.getElementById('selectedHorseBadge');
-            const nameEl = document.getElementById('selectedHorseName');
-            const clearBtn = document.getElementById('clearHorseBtn');
-            if (!badge || !nameEl || !clearBtn) return;
+      // Event wiring
+      wireEvents();
 
-            if (selectedHorseName) {
-                badge.classList.remove('hidden');
-                badge.classList.add('inline-flex');
-                clearBtn.classList.remove('hidden');
-                nameEl.textContent = selectedHorseName;
-            } else {
-                badge.classList.add('hidden');
-                badge.classList.remove('inline-flex');
-                clearBtn.classList.add('hidden');
-                nameEl.textContent = '';
-            }
-        }
+      // 初回描画
+      requestAnimationFrame(() => {
+        renderList();
+        showLoading(false);
+      });
+    }
 
-        function buildHorsePicker() {
-            const pickerEl = document.getElementById('horsePicker');
-            if (!pickerEl) return;
+    function wireEvents() {
+      // 馬選択
+      document.getElementById('toggleHorsePickerBtn')?.addEventListener('click', () => {
+        if (horsePickerOpen) closeHorsePicker();
+        else openHorsePicker();
+      });
+      document.getElementById('closeHorsePickerBtn')?.addEventListener('click', closeHorsePicker);
+      document.getElementById('horsePickerBackdrop')?.addEventListener('click', closeHorsePicker);
 
-            const groups = new Map(); // year -> horses[]
-            for (const h of (horsesData || [])) {
-                const y = getBirthYearFromHorse(h);
-                const key = (y === null) ? '不明' : String(y);
-                if (!groups.has(key)) groups.set(key, []);
-                groups.get(key).push(h);
-            }
+      // ESCで閉じる
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && horsePickerOpen) closeHorsePicker();
+      });
 
-            const years = Array.from(groups.keys()).sort((a, b) => {
-                if (a === '不明') return 1;
-                if (b === '不明') return -1;
-                return parseInt(b, 10) - parseInt(a, 10); // 若い年が上
-            });
+      // ☆フィルタ
+      document.getElementById('starToggleBtn')?.addEventListener('click', () => {
+        showStarOnly = !showStarOnly;
+        updateStarToggleUI();
+        scheduleRender(true);
+      });
 
-            pickerEl.innerHTML = '';
+      // 馬フィルタ解除
+      document.getElementById('clearHorseBtn')?.addEventListener('click', clearHorseFilter);
 
-            for (const y of years) {
-                const hs = groups.get(y) || [];
-                // 同年内は名前順（好み順を固定したくなったらここを差し替え）
-                hs.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
+      // 検索（debounce + IME）
+      const si = document.getElementById('searchInput');
+      if (si) {
+        si.addEventListener('input', () => {
+          if (isComposing) return; // 変換中は無視
+          scheduleRender(false);
+        });
 
-                const section = document.createElement('section');
-                section.className = 'space-y-2';
+        si.addEventListener('compositionstart', () => {
+          isComposing = true;
+        });
 
-                const title = document.createElement('div');
-                title.className = 'flex items-baseline justify-between';
-                title.innerHTML = `
-                    <div class="text-sm font-bold text-gray-300">
-                        ${escapeHtml(y)}<span class="text-xs font-normal text-gray-500 ml-1">(${hs.length})</span>
-                    </div>
-                `;
+        si.addEventListener('compositionend', () => {
+          isComposing = false;
+          // 変換確定のタイミングで反映
+          scheduleRender(false);
+        });
+      }
 
-                const grid = document.createElement('div');
-                // スマホは2列、広いと3列（4列は使わない）
-                grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-2';
+      // もっと見る
+      document.getElementById('moreBtn')?.addEventListener('click', () => {
+        displayLimit = (displayLimit === Infinity) ? Infinity : (displayLimit + MORE_STEP);
+        renderList();
+      });
 
-                for (const h of hs) {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 hover:border-gray-600 transition-colors text-left min-h-[44px] truncate';
-                    btn.textContent = h.name || '';
-                    btn.onclick = () => setHorseFilterByName(h.name || '');
-                    grid.appendChild(btn);
-                }
+      document.getElementById('allBtn')?.addEventListener('click', () => {
+        displayLimit = Infinity;
+        renderList();
+      });
 
-                section.appendChild(title);
-                section.appendChild(grid);
-                pickerEl.appendChild(section);
-            }
-        }
+      // 先頭へ
+      document.getElementById('scrollTopBtn')?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
 
-        function getNetkeibaRaceUrl(raceId) {
-            return `https://db.netkeiba.com/race/${raceId}/`;
-        }
+      // スクロールに応じて「先頭へ」ボタン制御
+      window.addEventListener('scroll', () => {
+        const btn = document.getElementById('scrollTopBtn');
+        if (!btn) return;
+        btn.classList.toggle('hidden', !(window.scrollY > 600));
+      }, { passive: true });
+    }
 
-        function parseNetkeibaID(fullId) {
-            // JRAの12桁（数字のみ）以外は「海外/不明ID」として扱う（place/race番号表示やviewerリンク生成をしない）
-            if (!fullId) return { isForeign: true };
-            if (/^\d{12}$/.test(fullId)) {
-                return {
-                    isForeign: false,
-                    year: fullId.substring(0, 4),
-                    place: fullId.substring(4, 6),
-                    kai: fullId.substring(6, 8),
-                    day: fullId.substring(8, 10),
-                    race: fullId.substring(10, 12)
-                };
-            }
-            return { isForeign: true, rawId: String(fullId) };
-        }
-
-        function generateViewerLinks(raceData, dateStr) {
-            if (!raceData || raceData.isForeign) return null;
-
-            const dateClean = dateStr.replace(/-/g, '');
-            const yy = raceData.year.substring(2, 4);
-            const p = parseInt(raceData.place).toString();
-            const kNum = parseInt(raceData.kai);
-            const k = kNum >= 10 ? kNum.toString(16) : kNum.toString();
-            const dNum = parseInt(raceData.day);
-            const d = dNum >= 10 ? dNum.toString(16) : dNum.toString();
-            const rNum = parseInt(raceData.race);
-            const rCode = rNum >= 10 ? rNum.toString(16) : rNum.toString();
-            const viewerId = `${yy}${p}${k}${d}${rCode}`;
-            const baseUrl = "https://regist.prc.jp/api/windowopen.aspx?target=race";
-            const yearPath = raceData.year;
-
-            return {
-                raceOnly: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=0`,
-                raceOnlyLow: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=2&view=0`,
-                raceTime: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_t&quality=4`,
-                paddock: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_p&quality=4`,
-                patrol: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}&quality=5&view=1`,
-                multi: `${baseUrl}/${yearPath}/${dateClean}/${viewerId}_m&quality=4`
-            };
-        }
-
-        function normalizeRank(rank) {
-            if (typeof rank === 'number' && Number.isFinite(rank)) {
-                return { kind: 'num', n: rank };
-            }
-            if (typeof rank === 'string') {
-                const t = rank.trim();
-                if (/^\d+$/.test(t)) {
-                    return { kind: 'num', n: parseInt(t, 10) };
-                }
-                if (t.length > 0) {
-                    return { kind: 'text', text: t };
-                }
-            }
-            return { kind: 'none' };
-        }
-
-        function getRankClass(rankNum) {
-            if (rankNum === 1) return 'rank-1';
-            if (rankNum === 2) return 'rank-2';
-            if (rankNum === 3) return 'rank-3';
-            return 'rank-other';
-        }
-
-        function escapeHtml(str) {
-            return String(str)
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;')
-                .replaceAll('"', '&quot;')
-                .replaceAll("'", '&#39;');
-        }
-
-        function renderList() {
-            const listEl = document.getElementById('raceList');
-            const emptyEl = document.getElementById('emptyState');
-            if (!listEl || !emptyEl) return;
-
-            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
-            const showHorseLabelInRows = (selectedHorseName === null);
-
-            listEl.innerHTML = '';
-
-            let filtered = races.filter(race => {
-                // 検索フィルター
-                let matchesSearch = true;
-                if (searchVal) {
-                    const placeName = race.parsed && !race.parsed.isForeign ? PLACE_MAP[race.parsed.place] : '';
-                    const target = `${race.date} ${race.raceName || ''} ${race.horseName || ''} ${placeName || ''}`.toLowerCase();
-                    const keywords = searchVal.split(/\s+/);
-                    matchesSearch = keywords.every(k => target.includes(k));
-                }
-
-                // 馬名フィルター
-                let matchesHorse = true;
-                if (selectedHorseName) {
-                    matchesHorse = (race.horseName === selectedHorseName);
-                }
-
-                // お気に入りフィルター
-                let matchesStar = true;
-                if (showStarOnly) {
-                    matchesStar = (race.star === true);
-                }
-
-                return matchesSearch && matchesHorse && matchesStar;
-            });
-
-            filtered.sort((a, b) => b.date.localeCompare(a.date));
-
-            if (filtered.length === 0) {
-                emptyEl.classList.remove('hidden');
-                return;
-            } else {
-                emptyEl.classList.add('hidden');
-            }
-
-            const frag = document.createDocumentFragment();
-
-            filtered.forEach(race => {
-                const links = generateViewerLinks(race.parsed, race.date);
-                const netkeibaUrl = (/^\d{12}$/.test(String(race.id))) ? getNetkeibaRaceUrl(String(race.id)) : null;
-
-                const isForeign = race.parsed && race.parsed.isForeign;
-                const placeName = (!isForeign && race.parsed) ? (PLACE_MAP[race.parsed.place] || '') : '<span class="text-xs border border-gray-600 px-1 rounded ml-1">海外</span>';
-                const rNum = (!isForeign && race.parsed) ? (parseInt(race.parsed.race) + 'R') : '';
-
-                const horseChipHtml = showHorseLabelInRows
-                    ? `<button type="button" class="horse-chip text-xs px-2 py-0.5 rounded border border-gray-600 ml-1 text-gray-200 hover:border-green-500 hover:text-green-300 transition-colors"
-                        data-horse="${escapeHtml(race.horseName)}">${escapeHtml(race.horseName)}</button>`
-                    : '';
-
-                const row = document.createElement('div');
-                row.className = "bg-gray-800 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-gray-750 border-l-4 border-transparent hover:border-green-500 transition-colors shadow-sm gap-3";
-
-                let linksHtml = '';
-                if (links) {
-                    linksHtml = `
-                        <div class="flex items-center gap-1 mt-2 sm:mt-0">
-                            <a href="${links.raceOnly}" target="_blank" title="レース映像(高画質)" class="btn-icon bg-blue-600 text-white hover:bg-blue-500">
-                                <i class="fas fa-play text-xs"></i>
-                            </a>
-                            <a href="${links.raceOnlyLow}" target="_blank" title="レース映像(低画質/予備)" class="btn-icon bg-blue-900 text-blue-300 hover:bg-blue-800 w-6">
-                                <span class="text-[10px] font-bold">SD</span>
-                            </a>
-
-                            <a href="${links.raceTime}" target="_blank" title="タイム付" class="btn-icon bg-indigo-900 text-indigo-200 hover:bg-indigo-700 hover:text-white">
-                                <i class="fas fa-stopwatch text-xs"></i>
-                            </a>
-                            <a href="${links.paddock}" target="_blank" title="パドック" class="btn-icon bg-green-900 text-green-200 hover:bg-green-700 hover:text-white">
-                                <i class="fas fa-horse text-xs"></i>
-                            </a>
-                            <a href="${links.multi}" target="_blank" title="マルチカメラ" class="btn-icon bg-purple-900 text-purple-200 hover:bg-purple-700 hover:text-white">
-                                <i class="fas fa-border-all text-xs"></i>
-                            </a>
-                            <a href="${links.patrol}" target="_blank" title="パトロール" class="btn-icon bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white">
-                                <i class="fas fa-video text-xs"></i>
-                            </a>
-
-                            ${netkeibaUrl ? `
-                            <a href="${netkeibaUrl}" target="_blank" title="netkeiba" class="btn-icon bg-amber-900 text-amber-200 hover:bg-amber-700 hover:text-white">
-                                <i class="fas fa-arrow-up-right-from-square text-xs"></i>
-                            </a>
-                            ` : ''}
-                        </div>
-                    `;
-                } else {
-                    linksHtml = `
-                        <div class="flex items-center gap-2 mt-2 sm:mt-0 opacity-50 select-none">
-                            <span class="text-xs text-gray-500"><i class="fas fa-ban mr-1"></i>映像なし</span>
-                        </div>
-                    `;
-                }
-
-                row.innerHTML = `
-                    <div class="flex-1 w-full sm:w-auto">
-                        <div class="flex items-center gap-2 mb-1 flex-wrap">
-                            <span class="text-gray-400 text-xs font-mono">${race.date.replace(/-/g, '/')}</span>
-                            <span class="text-gray-500 text-xs font-bold">${placeName}${rNum}</span>
-                            ${horseChipHtml}
-                        </div>
-                        <div class="flex items-center gap-3">
-                            ${(() => {
-                                const rk = normalizeRank(race.rank);
-                                if (rk.kind === 'num') {
-                                    return `<div class="${getRankClass(rk.n)} rank-badge shadow-sm">
-                                        ${rk.n}<span class="text-[0.6rem] ml-0.5 font-normal">着</span>
-                                    </div>`;
-                                }
-                                if (rk.kind === 'text') {
-                                    return `<div class="rank-other rank-badge shadow-sm">
-                                        ${escapeHtml(rk.text)}
-                                    </div>`;
-                                }
-                                return '';
-                            })()}
-                            <span class="text-white font-bold text-lg leading-tight">${escapeHtml(race.raceName)}${(race.star === true) ? ' <i class="fas fa-star text-yellow-400 ml-1"></i>' : ''}</span>
-                        </div>
-                    </div>
-                    ${linksHtml}
-                `;
-
-                const chip = row.querySelector('.horse-chip');
-                if (chip) {
-                    chip.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setHorseFilterByName(race.horseName);
-                    });
-                }
-
-                frag.appendChild(row);
-            });
-
-            listEl.appendChild(frag);
-        }
-    </script>
+    // Start
+    loadData();
+  </script>
 </body>
 </html>
