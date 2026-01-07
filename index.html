@@ -269,8 +269,8 @@
       if (ym >= 201501 && ym < 201701) {
         profile.paddock.sd = 1;
         if (graded) {
-          // マルチ：2015は q1、2016は q4（あなた調べ）
-          profile.multi.hd = (ym < 201601) ? 1 : 4;
+          // マルチ：2017/01より前は multi_all 側（quality=1）
+          profile.multi.hd = 1;
           // パトロール：2015/2016は q1（q2が予備で効く可能性）
           profile.patrol.hd = 2;
         }
@@ -325,6 +325,7 @@
       if (!parsed || parsed.isForeign || !quality) return null;
 
       const dateClean = (dateStr || '').replace(/-/g, '');
+      const ym = yyyymmFromDate(dateStr) || 0;
       const yy = parsed.year.substring(2, 4);
       const p = parseInt(parsed.place, 10).toString();
 
@@ -338,7 +339,9 @@
       const rCode = (rNum >= 10) ? rNum.toString(16) : rNum.toString();
 
       const viewerId = `${yy}${p}${k}${d}${rCode}`;
-      const baseUrl = "https://regist.prc.jp/api/windowopen.aspx?target=race";
+      const baseUrl = (kind === "multi" && ym < 201701)
+        ? "https://regist.prc.jp/api/windowopen.aspx?target=multi_all"
+        : "https://regist.prc.jp/api/windowopen.aspx?target=race";
       const yearPath = parsed.year;
 
       const base = `${baseUrl}/${yearPath}/${dateClean}/${viewerId}`;
