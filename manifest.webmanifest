@@ -1,6 +1,6 @@
 {
   "name": "My Racing Viewer",
-  "short_name": "Race",
+  "short_name": "レース動画",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
