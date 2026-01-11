@@ -23,19 +23,33 @@
       color: #111827;
     }
 
+    /* ボタンサイズを拡大: 32px -> 44px (指で押しやすいサイズ) */
     .btn-icon {
       transition: all 0.15s;
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px; /* 角丸も少し調整 */
       cursor: pointer;
       user-select: none;
       position: relative;
     }
     .btn-icon:active { transform: scale(0.95); }
+
+    /* リスト内のリンクボタンはサイズ維持（小さめの方が一覧性が良いため） */
+    .btn-icon-sm {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.15s;
+    }
+    .btn-icon-sm:active { transform: scale(0.95); }
+
 
     .rank-badge {
       min-width: 24px;
@@ -101,7 +115,7 @@
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-20 pb-28">
+  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-20 pb-32">
     <div id="listSection">
       
       <div id="raceList" class="space-y-4"></div>
@@ -129,7 +143,7 @@
         <p class="text-slate-700 font-bold">該当データなし</p>
       </div>
     
-      <div aria-hidden="true" style="height: calc(96px + env(safe-area-inset-bottom));"></div>
+      <div aria-hidden="true" style="height: calc(110px + env(safe-area-inset-bottom));"></div>
     </div>
   </main>
 
@@ -143,11 +157,11 @@
               <i class="fas fa-horse text-indigo-600"></i>
               <span class="font-bold text-slate-800">馬を選ぶ</span>
             </div>
-            <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200" type="button" id="closeHorsePickerBtn">
-              <i class="fas fa-xmark"></i>
+            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200" type="button" id="closeHorsePickerBtn">
+              <i class="fas fa-xmark text-lg"></i>
             </button>
           </div>
-          <div id="horsePickerScroll" class="px-5 py-6 overflow-y-auto overscroll-contain momentum-scroll pb-32" style="padding-bottom: calc(120px + env(safe-area-inset-bottom));">
+          <div id="horsePickerScroll" class="px-5 py-6 overflow-y-auto overscroll-contain momentum-scroll pb-32" style="padding-bottom: calc(140px + env(safe-area-inset-bottom));">
             <div id="horsePicker" class="space-y-6"></div>
           </div>
         </div>
@@ -166,60 +180,60 @@
               <i class="fas fa-bars text-indigo-600"></i>
               <span class="font-bold text-slate-800">メニュー</span>
             </div>
-            <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200" type="button" id="closeMenuBtn">
-              <i class="fas fa-xmark"></i>
+            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200" type="button" id="closeMenuBtn">
+              <i class="fas fa-xmark text-lg"></i>
             </button>
           </div>
 
-          <div class="px-5 py-6 overflow-y-auto overscroll-contain momentum-scroll pb-20">
-            <div class="space-y-6">
+          <div class="px-5 py-8 overflow-y-auto overscroll-contain momentum-scroll pb-24">
+            <div class="space-y-8">
               
               <div>
-                <h3 class="text-xs font-bold text-slate-500 mb-3 ml-1 uppercase tracking-wider">JRAレーシングビュアー</h3>
+                <h3 class="text-sm font-bold text-slate-600 mb-4 ml-1 uppercase tracking-wider">JRAレーシングビュアー</h3>
                 <div class="flex flex-col gap-3">
-                  <a href="https://prc.jp/jraracingviewer/index.html" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center">
-                        <i class="fas fa-home text-sm"></i>
+                  <a href="https://prc.jp/jraracingviewer/index.html" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
+                        <i class="fas fa-home"></i>
                       </div>
-                      <span class="font-bold text-slate-700">TOP</span>
+                      <span class="font-bold text-slate-800 text-base">TOP</span>
                     </div>
-                    <i class="fas fa-chevron-right text-slate-300 text-xs group-hover:text-slate-400"></i>
+                    <i class="fas fa-chevron-right text-slate-300 group-hover:text-slate-400"></i>
                   </a>
 
-                  <a href="https://prc.jp/jraracingviewer/contents/g1/search/year.html" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center">
-                        <i class="fas fa-trophy text-sm"></i>
+                  <a href="https://prc.jp/jraracingviewer/contents/g1/search/year.html" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center text-lg">
+                        <i class="fas fa-trophy"></i>
                       </div>
-                      <span class="font-bold text-slate-700">GⅠホースライブラリー</span>
+                      <span class="font-bold text-slate-800 text-base">GⅠホースライブラリー</span>
                     </div>
-                    <i class="fas fa-chevron-right text-slate-300 text-xs group-hover:text-slate-400"></i>
+                    <i class="fas fa-chevron-right text-slate-300 group-hover:text-slate-400"></i>
                   </a>
 
-                  <a href="https://prc.jp/jraracingviewer/contents/seiseki/" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                        <i class="fas fa-calendar-days text-sm"></i>
+                  <a href="https://prc.jp/jraracingviewer/contents/seiseki/" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                        <i class="fas fa-calendar-days"></i>
                       </div>
-                      <span class="font-bold text-slate-700">レースカレンダー</span>
+                      <span class="font-bold text-slate-800 text-base">レースカレンダー</span>
                     </div>
-                    <i class="fas fa-chevron-right text-slate-300 text-xs group-hover:text-slate-400"></i>
+                    <i class="fas fa-chevron-right text-slate-300 group-hover:text-slate-400"></i>
                   </a>
                 </div>
               </div>
 
               <div>
-                <h3 class="text-xs font-bold text-slate-500 mb-3 ml-1 uppercase tracking-wider">その他</h3>
+                <h3 class="text-sm font-bold text-slate-600 mb-4 ml-1 uppercase tracking-wider">その他</h3>
                 <div class="flex flex-col gap-3">
-                  <a href="https://gue1971.github.io/racing-viewer-mobile/" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
-                    <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
-                        <i class="fas fa-mobile-screen text-sm"></i>
+                  <a href="https://gue1971.github.io/racing-viewer-mobile/" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-lg">
+                        <i class="fas fa-mobile-screen"></i>
                       </div>
-                      <span class="font-bold text-slate-700">シンプルビュアー</span>
+                      <span class="font-bold text-slate-800 text-base">シンプルビュアー</span>
                     </div>
-                    <i class="fas fa-arrow-up-right-from-square text-slate-300 text-xs group-hover:text-slate-400"></i>
+                    <i class="fas fa-arrow-up-right-from-square text-slate-300 group-hover:text-slate-400"></i>
                   </a>
                 </div>
               </div>
@@ -485,7 +499,6 @@
 
     // --- Horse Picker UI ---
     function openHorsePicker() {
-      // Close Menu if open
       if (menuModalOpen) closeMenuModal();
 
       horsePickerOpen = true;
@@ -514,14 +527,12 @@
       } else {
         modal?.classList.add('hidden');
         modal?.setAttribute('aria-hidden', 'true');
-        // Only remove overflow hidden if menu is also closed
         if (!menuModalOpen) document.body.classList.remove('overflow-hidden');
       }
     }
 
     // --- Menu Modal UI ---
     function openMenuModal() {
-      // Close Horse Picker if open
       if (horsePickerOpen) closeHorsePicker();
 
       menuModalOpen = true;
@@ -546,7 +557,6 @@
       } else {
         modal?.classList.add('hidden');
         modal?.setAttribute('aria-hidden', 'true');
-        // Only remove overflow hidden if horse picker is also closed
         if (!horsePickerOpen) document.body.classList.remove('overflow-hidden');
       }
     }
@@ -756,7 +766,8 @@
         const profile = getQualityProfile(race.date, race.raceName);
 
         function btnHtml(href, title, classes, innerHtml, disabled, dim) {
-          const baseCls = `btn-icon rounded-md ${classes} ${dim ? 'opacity-60' : ''} ${disabled ? 'opacity-30 pointer-events-none' : ''}`;
+          // リスト内ボタンは少し小さめのまま(btn-icon-sm)
+          const baseCls = `btn-icon-sm ${classes} ${dim ? 'opacity-60' : ''} ${disabled ? 'opacity-30 pointer-events-none' : ''}`;
           if (disabled || !href) {
             return `<span title="${escapeHtml(title)}" class="${baseCls}">${innerHtml}</span>`;
           }
@@ -993,7 +1004,7 @@
   </script>
 
   <footer id="appFooter" class="fixed inset-x-0 bottom-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-300 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-    <div class="max-w-4xl mx-auto px-4 md:px-8 py-3">
+    <div class="max-w-4xl mx-auto px-4 md:px-8 py-4">
       <div class="flex items-center gap-3 w-full">
 
         <div class="relative flex-1 group">
@@ -1004,6 +1015,7 @@
             placeholder="検索 (レース名など)"
             class="w-full bg-[#f1f5f9] border border-slate-300 rounded-xl pl-9 pr-3 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-indigo-500 placeholder-slate-500 transition-all shadow-inner font-medium"
             autocomplete="off"
+            style="height: 44px;" 
           />
         </div>
 
@@ -1013,7 +1025,7 @@
           type="button"
           title="お気に入りのみ"
         >
-          <i id="starToggleIcon" class="far fa-star"></i>
+          <i id="starToggleIcon" class="far fa-star text-lg"></i>
         </button>
 
         <button
@@ -1022,7 +1034,7 @@
           type="button"
           title="メニューを開く"
         >
-          <i class="fas fa-bars"></i>
+          <i class="fas fa-bars text-lg"></i>
         </button>
 
         <button
@@ -1031,7 +1043,7 @@
           type="button"
           title="馬を選ぶ"
         >
-          <i class="fas fa-horse"></i>
+          <i class="fas fa-horse text-lg"></i>
         </button>
 
         <div id="selectedHorseBadge" class="hidden items-center whitespace-nowrap bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full border border-indigo-200 text-xs font-bold shadow-sm cursor-pointer hover:bg-indigo-100 transition-colors" title="タップして解除">
