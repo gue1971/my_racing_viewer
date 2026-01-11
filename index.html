@@ -376,31 +376,20 @@
       const icon = document.getElementById('starToggleIcon');
       if (!btn || !icon) return;
 
-      // 定義: OFF時のクラス群（ホバーでグレーになる設定を含む）
-      const offClasses = ['bg-white', 'text-slate-500', 'border-slate-300', 'hover:text-slate-700', 'hover:border-slate-400'];
-      
-      // 定義: ON時のクラス群（黄色固定。ホバーでもグレーにならないようにする）
-      // hover:bg-yellow-100 を入れて、ホバー時は「薄い黄色」になるように
-      const onClasses = ['bg-yellow-50', 'text-yellow-500', 'border-yellow-400', 'hover:bg-yellow-100'];
-
+      // ボタン自体の色は常に「白背景・グレースケールボーダー」で固定
+      // 変化するのは「アイコンの色」と「アイコンの形状」のみ
       if (showStarOnly) {
         btn.setAttribute('aria-pressed', 'true');
-        // OFFクラスを全て剥奪（これで hover:text-slate-700 も消える）
-        btn.classList.remove(...offClasses);
-        // ONクラスを付与
-        btn.classList.add(...onClasses);
-
-        icon.classList.remove('far');
-        icon.classList.add('fas');
+        
+        // アイコンを黄色(塗りつぶし)に
+        icon.classList.remove('far', 'text-slate-500');
+        icon.classList.add('fas', 'text-yellow-500');
       } else {
         btn.setAttribute('aria-pressed', 'false');
-        // ONクラスを全て剥奪
-        btn.classList.remove(...onClasses);
-        // OFFクラスを付与
-        btn.classList.add(...offClasses);
-
-        icon.classList.remove('fas');
-        icon.classList.add('far');
+        
+        // アイコンをグレー(線画)に
+        icon.classList.remove('fas', 'text-yellow-500');
+        icon.classList.add('far', 'text-slate-500');
       }
     }
 
@@ -910,7 +899,7 @@
 
         <button
           id="starToggleBtn"
-          class="btn-icon bg-white border border-slate-300 text-slate-500 hover:text-slate-700 hover:border-slate-400 shadow-sm"
+          class="btn-icon bg-white border border-slate-300 text-slate-500 hover:bg-slate-50 shadow-sm"
           type="button"
           title="お気に入りのみ"
         >
@@ -919,13 +908,12 @@
 
         <button
           id="toggleHorsePickerBtn"
-          class="bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-700 font-bold hover:border-slate-400 hover:text-slate-900 transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
+          class="btn-icon bg-white border border-slate-300 text-slate-500 hover:bg-slate-50 shadow-sm flex items-center justify-center gap-1"
           type="button"
           title="馬を選ぶ"
         >
           <i class="fas fa-horse"></i>
-          <span id="horsePickerLabel">馬を選択</span>
-          <i id="horsePickerChevron" class="fas fa-chevron-up text-[10px] text-slate-400"></i>
+          <i id="horsePickerChevron" class="fas fa-chevron-up text-[8px] mt-0.5"></i>
         </button>
 
         <div id="selectedHorseBadge" class="hidden items-center whitespace-nowrap bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full border border-indigo-200 text-xs font-bold shadow-sm cursor-pointer hover:bg-indigo-100 transition-colors" title="タップして解除">
