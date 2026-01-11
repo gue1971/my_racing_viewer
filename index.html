@@ -21,7 +21,6 @@
       font-family: 'Noto Sans JP', sans-serif;
       background-color: #eff2f5; 
       color: #111827;
-      /* ヘッダー固定のためpadding-top調整はmainタグで行う */
     }
 
     .btn-icon {
@@ -377,18 +376,29 @@
       const icon = document.getElementById('starToggleIcon');
       if (!btn || !icon) return;
 
+      // 定義: OFF時のクラス群（ホバーでグレーになる設定を含む）
+      const offClasses = ['bg-white', 'text-slate-500', 'border-slate-300', 'hover:text-slate-700', 'hover:border-slate-400'];
+      
+      // 定義: ON時のクラス群（黄色固定。ホバーでもグレーにならないようにする）
+      // hover:bg-yellow-100 を入れて、ホバー時は「薄い黄色」になるように
+      const onClasses = ['bg-yellow-50', 'text-yellow-500', 'border-yellow-400', 'hover:bg-yellow-100'];
+
       if (showStarOnly) {
         btn.setAttribute('aria-pressed', 'true');
-        // ON: 黄色テキスト + 薄い黄色背景 + ボーダー黄色
-        btn.classList.add('bg-yellow-50', 'text-yellow-500', 'border-yellow-400');
-        btn.classList.remove('bg-white', 'text-slate-500', 'border-slate-300');
+        // OFFクラスを全て剥奪（これで hover:text-slate-700 も消える）
+        btn.classList.remove(...offClasses);
+        // ONクラスを付与
+        btn.classList.add(...onClasses);
+
         icon.classList.remove('far');
         icon.classList.add('fas');
       } else {
         btn.setAttribute('aria-pressed', 'false');
-        // OFF: 白背景 + グレースケール
-        btn.classList.add('bg-white', 'text-slate-500', 'border-slate-300');
-        btn.classList.remove('bg-yellow-50', 'text-yellow-500', 'border-yellow-400');
+        // ONクラスを全て剥奪
+        btn.classList.remove(...onClasses);
+        // OFFクラスを付与
+        btn.classList.add(...offClasses);
+
         icon.classList.remove('fas');
         icon.classList.add('far');
       }
