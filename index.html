@@ -7,7 +7,6 @@
 
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-  
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -20,10 +19,8 @@
 
     body {
       font-family: 'Noto Sans JP', sans-serif;
-      /* 背景：白 */
-      background-color: #ffffff;
-      /* 文字：濃いグレー */
-      color: #111827;
+      background-color: #f9fafb; /* 白系背景 */
+      color: #1f2937; /* 濃いグレー文字 */
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
       padding-top: env(safe-area-inset-top);
@@ -58,7 +55,6 @@
       line-height: 1;
       user-select: none;
     }
-    /* 白背景用に調整したランクバッジ */
     .rank-1 { background-color: #fbbf24; color: #78350f; }
     .rank-2 { background-color: #e5e7eb; color: #1f2937; }
     .rank-3 { background-color: #fcd34d; color: #92400e; }
@@ -76,7 +72,6 @@
 
     .momentum-scroll { -webkit-overflow-scrolling: touch; }
   
-    /* ブランドカラーボタン */
     .btn-netkeiba { background-color: #3850B0; color: #ffffff; }
     .btn-race { background-color: #783020; color: #ffffff; }
 
@@ -124,7 +119,7 @@
       </div>
 
       <div id="emptyState" class="text-center py-12 text-gray-500 hidden">
-        <p class="text-sm">データが見つかりません</p>
+        <p class="text-sm" id="emptyMsg">データが見つかりません</p>
       </div>
     
       <div aria-hidden="true" style="height: calc(96px + env(safe-area-inset-bottom));"></div>
@@ -157,7 +152,7 @@
 
   <script>
     // ==========================
-    // Settings (5000件想定)
+    // Settings
     // ==========================
     const DEFAULT_LIMIT = 50;   
     const MORE_STEP = 100;      
@@ -173,18 +168,13 @@
     // ==========================
     let horsesData = [];
     let rawData = [];
-
-    let racesSorted = [];     
+    let racesSorted = [];
     let selectedHorseName = null;
     let showStarOnly = false;
-
     let horsePickerOpen = false;
     let horsePickerBuilt = false;
-
     let displayLimit = DEFAULT_LIMIT;
     let lastFilterKey = '';
-
-    // 検索系
     let isComposing = false;
     let searchTimer = null;
 
@@ -204,13 +194,18 @@
       const overlay = document.getElementById('loadingOverlay');
       const textEl = document.getElementById('loadingText');
       if (!overlay) return;
-      if (typeof text === 'string' && textEl) textEl.textContent = text;
-      overlay.classList.toggle('hidden', !show);
+      if (show) {
+        if (typeof text === 'string' && textEl) textEl.textContent = text;
+        overlay.classList.remove('hidden');
+      } else {
+        overlay.classList.add('hidden');
+      }
     }
 
     function getFetchCacheMode() {
+      // ローカル開発時はキャッシュなし、本番はキャッシュ有効
       const isLocal = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-      return isLocal ? 'no-store' : 'force-cache';
+      return isLocal ? 'no-store' : 'default';
     }
 
     function parseNetkeibaID(fullId) {
@@ -232,7 +227,6 @@
     function getNetkeibaRaceUrl(raceId) {
       return `https://db.netkeiba.com/race/${raceId}/`;
     }
-
     
     function isGradedRace(raceName) {
       const s = (raceName || '');
@@ -248,7 +242,6 @@
     function getQualityProfile(dateStr, raceName) {
       const ym = yyyymmFromDate(dateStr);
       const graded = isGradedRace(raceName);
-
       const profile = {
         graded,
         race:    { hd: null, sd: 2 },
@@ -259,14 +252,12 @@
       };
 
       if (!ym) return profile;
-
       if (ym < 201401) return profile;
-
+      
       if (ym >= 201401 && ym < 201501) {
         profile.paddock.sd = 1;
         return profile;
       }
-
       if (ym >= 201501 && ym < 201701) {
         profile.paddock.sd = 1;
         if (graded) {
@@ -275,7 +266,6 @@
         }
         return profile;
       }
-
       if (ym >= 201701 && ym < 202010) {
         profile.paddock.sd = 1;
         profile.race.hd = graded ? 5 : 4;
@@ -286,7 +276,6 @@
         }
         return profile;
       }
-
       if (ym >= 202010 && ym < 202210) {
         profile.paddock.hd = 4;
         profile.paddock.sd = 1;
@@ -296,7 +285,6 @@
         profile.patrol.hd = 5;
         return profile;
       }
-
       if (ym >= 202210) {
         profile.paddock.hd = 4;
         profile.paddock.sd = 1;
@@ -307,33 +295,26 @@
         profile.patrol.hd = 5;
         return profile;
       }
-
       return profile;
     }
 
     function buildViewerUrl(parsed, dateStr, kind, quality) {
       if (!parsed || parsed.isForeign || !quality) return null;
-
       const dateClean = (dateStr || '').replace(/-/g, '');
       const ym = yyyymmFromDate(dateStr) || 0;
       const yy = parsed.year.substring(2, 4);
       const p = parseInt(parsed.place, 10).toString();
-
       const kNum = parseInt(parsed.kai, 10);
       const k = (kNum >= 10) ? kNum.toString(16) : kNum.toString();
-
       const dNum = parseInt(parsed.day, 10);
       const d = (dNum >= 10) ? dNum.toString(16) : dNum.toString();
-
       const rNum = parseInt(parsed.race, 10);
       const rCode = (rNum >= 10) ? rNum.toString(16) : rNum.toString();
-
       const viewerId = `${yy}${p}${k}${d}${rCode}`;
       const baseUrl = (kind === "multi" && ym < 201701)
         ? "https://regist.prc.jp/api/windowopen.aspx?target=multi_all"
         : "https://regist.prc.jp/api/windowopen.aspx?target=race";
       const yearPath = parsed.year;
-
       const base = `${baseUrl}/${yearPath}/${dateClean}/${viewerId}`;
 
       if (kind === 'race') return `${base}&quality=${quality}&view=0`;
@@ -379,7 +360,6 @@
       const btn = document.getElementById('starToggleBtn');
       const icon = document.getElementById('starToggleIcon');
       if (!btn || !icon) return;
-
       if (showStarOnly) {
         btn.setAttribute('aria-pressed', 'true');
         icon.classList.remove('far');
@@ -395,9 +375,7 @@
       const badge = document.getElementById('selectedHorseBadge');
       const nameEl = document.getElementById('selectedHorseName');
       const clearBtn = document.getElementById('clearHorseBtn');
-
       if (!badge || !nameEl || !clearBtn) return;
-
       if (selectedHorseName) {
         badge.classList.remove('hidden');
         badge.classList.add('inline-flex');
@@ -413,10 +391,7 @@
 
     function openHorsePicker() {
       horsePickerOpen = true;
-      if (!horsePickerBuilt) {
-        buildHorsePicker();
-        horsePickerBuilt = true;
-      }
+      if (!horsePickerBuilt) { buildHorsePicker(); horsePickerBuilt = true; }
       updateHorsePickerUI();
     }
 
@@ -431,25 +406,24 @@
       const btn = document.getElementById('toggleHorsePickerBtn');
       const listSection = document.getElementById('listSection');
       const footer = document.getElementById('appFooter');
+      
+      if (!modal) return;
 
       btn?.setAttribute('aria-expanded', horsePickerOpen ? 'true' : 'false');
-
       if (horsePickerOpen) {
-        modal?.classList.remove('hidden');
-        modal?.setAttribute('aria-hidden', 'false');
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
         listSection?.classList.add('hidden');
         footer?.classList.add('hidden');
         document.body.classList.add('overflow-hidden');
-
         chev?.classList.remove('fa-chevron-down');
         chev?.classList.add('fa-chevron-up');
       } else {
-        modal?.classList.add('hidden');
-        modal?.setAttribute('aria-hidden', 'true');
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
         listSection?.classList.remove('hidden');
         footer?.classList.remove('hidden');
         document.body.classList.remove('overflow-hidden');
-
         chev?.classList.remove('fa-chevron-down');
         chev?.classList.add('fa-chevron-up');
       }
@@ -470,280 +444,244 @@
     }
 
     // ==========================
-    // Debounced render + IME
+    // Debounced render
     // ==========================
     function scheduleRender(forceImmediate = false) {
       if (horsePickerOpen) return;
-
-      if (forceImmediate) {
-        clearTimeout(searchTimer);
-        renderList();
-        return;
-      }
-
+      if (forceImmediate) { clearTimeout(searchTimer); renderList(); return; }
       clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => {
-        if (isComposing) return;
-        renderList();
-      }, SEARCH_DEBOUNCE_MS);
+      searchTimer = setTimeout(() => { if (isComposing) return; renderList(); }, SEARCH_DEBOUNCE_MS);
     }
 
-    // ==========================
-    // Horse Picker (lazy build)
-    // ==========================
     function buildHorsePicker() {
-      const pickerEl = document.getElementById('horsePicker');
-      if (!pickerEl) return;
-
-      const groups = new Map(); // year -> horses[]
-      for (const h of (horsesData || [])) {
-        const y = getBirthYearFromHorse(h);
-        const key = (y === null) ? '不明' : String(y);
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(h);
-      }
-
-      const years = Array.from(groups.keys()).sort((a, b) => {
-        if (a === '不明') return 1;
-        if (b === '不明') return -1;
-        return parseInt(b, 10) - parseInt(a, 10); // 若い年が上
-      });
-
-      pickerEl.innerHTML = '';
-
-      for (const y of years) {
-        const hs = groups.get(y) || [];
-        hs.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
-
-        const section = document.createElement('section');
-        section.className = 'space-y-2';
-
-        const title = document.createElement('div');
-        title.className = 'flex items-baseline justify-between';
-        title.innerHTML = `
-          <div class="text-sm font-bold text-gray-500">
-            ${escapeHtml(y)}<span class="text-xs font-normal text-gray-400 ml-1">(${hs.length})</span>
-          </div>
-        `;
-
-        const grid = document.createElement('div');
-        grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-2';
-
-        for (const h of hs) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          // 馬ボタン: 白背景
-          btn.className = 'bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-colors text-left min-h-[44px] truncate shadow-sm';
-          btn.textContent = h.name || '';
-          btn.addEventListener('click', () => setHorseFilterByName(h.name || ''));
-          grid.appendChild(btn);
+      try {
+        const pickerEl = document.getElementById('horsePicker');
+        if (!pickerEl) return;
+        const groups = new Map(); 
+        for (const h of (horsesData || [])) {
+          const y = getBirthYearFromHorse(h);
+          const key = (y === null) ? '不明' : String(y);
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(h);
         }
-
-        section.appendChild(title);
-        section.appendChild(grid);
-        pickerEl.appendChild(section);
-      }
+        const years = Array.from(groups.keys()).sort((a, b) => {
+          if (a === '不明') return 1;
+          if (b === '不明') return -1;
+          return parseInt(b, 10) - parseInt(a, 10);
+        });
+        pickerEl.innerHTML = '';
+        for (const y of years) {
+          const hs = groups.get(y) || [];
+          hs.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
+          const section = document.createElement('section');
+          section.className = 'space-y-2';
+          const title = document.createElement('div');
+          title.className = 'flex items-baseline justify-between';
+          title.innerHTML = `
+            <div class="text-sm font-bold text-gray-500">
+              ${escapeHtml(y)}<span class="text-xs font-normal text-gray-400 ml-1">(${hs.length})</span>
+            </div>
+          `;
+          const grid = document.createElement('div');
+          grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-2';
+          for (const h of hs) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-colors text-left min-h-[44px] truncate shadow-sm';
+            btn.textContent = h.name || '';
+            btn.addEventListener('click', () => setHorseFilterByName(h.name || ''));
+            grid.appendChild(btn);
+          }
+          section.appendChild(title);
+          section.appendChild(grid);
+          pickerEl.appendChild(section);
+        }
+      } catch(e) { console.error("Picker build failed", e); }
     }
 
-    // ==========================
-    // Render
-    // ==========================
     function renderList() {
-      const listEl = document.getElementById('raceList');
-      const emptyEl = document.getElementById('emptyState');
-      const moreWrap = document.getElementById('moreWrap');
-      const shownCount = document.getElementById('shownCount');
-      const listHint = document.getElementById('listHint');
-      const scrollTopBtn = document.getElementById('scrollTopBtn');
+      try {
+        const listEl = document.getElementById('raceList');
+        const emptyEl = document.getElementById('emptyState');
+        const moreWrap = document.getElementById('moreWrap');
+        const shownCount = document.getElementById('shownCount');
+        const listHint = document.getElementById('listHint');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
 
-      if (!listEl || !emptyEl) return;
+        if (!listEl || !emptyEl) return;
 
-      const searchInput = document.getElementById('searchInput');
-      const searchVal = (searchInput?.value || '').toLowerCase().trim();
+        const searchInput = document.getElementById('searchInput');
+        const searchVal = (searchInput?.value || '').toLowerCase().trim();
+        const isDefaultView = !selectedHorseName && !showStarOnly && !searchVal;
+        const filterKey = getFilterKey(searchVal);
+        if (filterKey !== lastFilterKey) { lastFilterKey = filterKey; displayLimit = DEFAULT_LIMIT; }
 
-      const isDefaultView = !selectedHorseName && !showStarOnly && !searchVal;
+        // Hint update
+        if (listHint) {
+          if (isDefaultView) { listHint.textContent = `直近のレース（最新順）`; }
+          else {
+            const parts = [];
+            if (selectedHorseName) parts.push(`馬: ${selectedHorseName}`);
+            if (searchVal) parts.push(`検索: ${searchVal}`);
+            if (showStarOnly) parts.push('お気に入りのみ');
+            listHint.textContent = parts.join(' / ') || '';
+          }
+        }
+        if (scrollTopBtn) { const show = window.scrollY > 600; scrollTopBtn.classList.toggle('hidden', !show); }
 
-      const filterKey = getFilterKey(searchVal);
-      if (filterKey !== lastFilterKey) {
-        lastFilterKey = filterKey;
-        displayLimit = DEFAULT_LIMIT;
-      }
+        listEl.innerHTML = '';
+        emptyEl.classList.add('hidden');
 
-      if (listHint) {
+        let total = 0;
+        let visible = [];
+
         if (isDefaultView) {
-          listHint.textContent = `直近のレース（最新順）`;
+          total = racesSorted.length;
+          const lim = (displayLimit === Infinity) ? total : Math.min(displayLimit, total);
+          visible = racesSorted.slice(0, lim);
         } else {
-          const parts = [];
-          if (selectedHorseName) parts.push(`馬: ${selectedHorseName}`);
-          if (searchVal) parts.push(`検索: ${searchVal}`);
-          if (showStarOnly) parts.push('お気に入りのみ');
-          listHint.textContent = parts.join(' / ') || '';
-        }
-      }
-
-      if (scrollTopBtn) {
-        const show = window.scrollY > 600;
-        scrollTopBtn.classList.toggle('hidden', !show);
-      }
-
-      listEl.innerHTML = '';
-      emptyEl.classList.add('hidden');
-
-      let total = 0;
-      let visible = [];
-
-      if (isDefaultView) {
-        total = racesSorted.length;
-        const lim = (displayLimit === Infinity) ? total : Math.min(displayLimit, total);
-        visible = racesSorted.slice(0, lim);
-      } else {
-        const keywords = searchVal ? searchVal.split(/\s+/).filter(Boolean) : [];
-        const filtered = [];
-        for (const race of racesSorted) {
-          if (selectedHorseName && race.horseName !== selectedHorseName) continue;
-          if (showStarOnly && race.star !== true) continue;
-          if (keywords.length) {
-            let ok = true;
-            const t = race.searchText || '';
-            for (const k of keywords) {
-              if (!t.includes(k)) { ok = false; break; }
+          const keywords = searchVal ? searchVal.split(/\s+/).filter(Boolean) : [];
+          const filtered = [];
+          for (const race of racesSorted) {
+            if (selectedHorseName && race.horseName !== selectedHorseName) continue;
+            if (showStarOnly && race.star !== true) continue;
+            if (keywords.length) {
+              let ok = true;
+              const t = race.searchText || '';
+              for (const k of keywords) { if (!t.includes(k)) { ok = false; break; } }
+              if (!ok) continue;
             }
-            if (!ok) continue;
+            filtered.push(race);
           }
-          filtered.push(race);
-        }
-        total = filtered.length;
-        visible = filtered;
-      }
-
-      if (total === 0) {
-        emptyEl.classList.remove('hidden');
-        moreWrap?.classList.add('hidden');
-        if (shownCount) shownCount.textContent = '';
-        return;
-      }
-
-      if (isDefaultView && total > visible.length) {
-        moreWrap?.classList.remove('hidden');
-        if (shownCount) shownCount.textContent = `${visible.length} / ${total}`;
-      } else {
-        moreWrap?.classList.add('hidden');
-        if (shownCount) shownCount.textContent = '';
-      }
-
-      const showHorseLabelInRows = (selectedHorseName === null);
-      const frag = document.createDocumentFragment();
-
-      for (const race of visible) {
-        const parsed = race.parsed;
-        const isForeign = parsed && parsed.isForeign;
-        const placeName = (!isForeign && parsed) ? (PLACE_MAP[parsed.place] || '') : '海外';
-        const rNum = (!isForeign && parsed) ? (parseInt(parsed.race, 10) + 'R') : '';
-
-        // 馬タグ: 白背景・グレー文字
-        const horseChipHtml = showHorseLabelInRows
-          ? `<button type="button" class="horse-chip text-xs px-2 py-0.5 rounded-full border border-gray-300 ml-1 text-gray-600 hover:border-green-500 hover:text-green-600 transition-colors" data-horse="${escapeHtml(race.horseName)}">${escapeHtml(race.horseName)}</button>`
-          : '';
-
-        const netkeibaUrl = (/^\d{12}$/.test(String(race.id))) ? getNetkeibaRaceUrl(String(race.id)) : null;
-
-        const row = document.createElement('div');
-        // カードスタイル（白）: 白背景、グレー枠、薄い影
-        row.className = "bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-200 hover:border-green-500/50 transition-colors shadow-sm gap-3";
-
-        const profile = getQualityProfile(race.date, race.raceName);
-
-        function btnHtml(href, title, classes, innerHtml, disabled, dim) {
-          const baseCls = `btn-icon ${classes} ${dim ? 'opacity-50' : ''} ${disabled ? 'opacity-30 pointer-events-none' : ''}`;
-          if (disabled || !href) {
-            return `<span title="${escapeHtml(title)}" class="${baseCls}">${innerHtml}</span>`;
-          }
-          return `<a href="${href}" target="_blank" rel="noopener" title="${escapeHtml(title)}" class="${baseCls}">${innerHtml}</a>`;
+          total = filtered.length;
+          visible = filtered;
         }
 
-        let linksHtml = '';
-        if (parsed && !parsed.isForeign) {
-          const raceHdUrl = buildViewerUrl(parsed, race.date, 'race', profile.race.hd);
-          const raceSdUrl = buildViewerUrl(parsed, race.date, 'race', profile.race.sd);
-          const paddockHdUrl = buildViewerUrl(parsed, race.date, 'paddock', profile.paddock.hd);
-          const paddockSdUrl = buildViewerUrl(parsed, race.date, 'paddock', profile.paddock.sd);
-          const timeUrl = buildViewerUrl(parsed, race.date, 'time', profile.time.hd);
-          const multiUrl = buildViewerUrl(parsed, race.date, 'multi', profile.multi.hd);
-          const patrolUrl = buildViewerUrl(parsed, race.date, 'patrol', profile.patrol.hd);
-          const raceSdDim = !!raceHdUrl && !!raceSdUrl;
-          const padSdDim = !!paddockHdUrl && !!paddockSdUrl;
-
-          // ボタン類（白背景に合わせて調整）
-          linksHtml = `
-            <div class="flex items-center gap-2 mt-1 sm:mt-0">
-              ${btnHtml(netkeibaUrl, 'netkeiba', 'btn-netkeiba', '<i class="fas fa-arrow-up-right-from-square text-xs"></i>', !netkeibaUrl, false)}
-              ${btnHtml(raceHdUrl, 'レース(高画質)', 'btn-race', '<i class="fas fa-play text-xs"></i>', !raceHdUrl, false)}
-              ${btnHtml(raceSdUrl, 'レース(SD)', 'btn-race', '<span class="text-[10px] font-bold">SD</span>', !raceSdUrl, raceSdDim)}
-
-              ${btnHtml(paddockHdUrl, 'パドック(高画質)', 'bg-green-700 text-white hover:bg-green-600', '<i class="fas fa-horse text-xs"></i>', !paddockHdUrl, false)}
-              ${btnHtml(paddockSdUrl, 'パドック(SD)', 'bg-green-600 text-white hover:bg-green-500', '<span class="text-[10px] font-bold">SD</span>', !paddockSdUrl, padSdDim)}
-
-              ${patrolUrl ? btnHtml(patrolUrl, 'パトロール', 'bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200', '<i class="fas fa-video text-xs"></i>', false, false) : ''}
-
-              ${multiUrl ? btnHtml(multiUrl, (profile.multi.hd && profile.multi.hd <= 2) ? 'マルチ(SD)' : 'マルチカメラ', 'bg-purple-700 text-white hover:bg-purple-600', '<i class="fas fa-border-all text-xs"></i>', false, false) : ''}
-              ${timeUrl ? btnHtml(timeUrl, '時計付', 'bg-indigo-700 text-white hover:bg-indigo-600', '<i class="fas fa-stopwatch text-xs"></i>', false, false) : ''}
-            </div>
-          `;
-        } else {
-          linksHtml = `
-            <div class="flex items-center gap-2 mt-1 sm:mt-0 opacity-60 select-none">
-              <span class="text-xs text-gray-400"><i class="fas fa-ban mr-1"></i>映像リンクなし</span>
-            </div>
-          `;
+        if (total === 0) {
+          emptyEl.classList.remove('hidden'); 
+          moreWrap?.classList.add('hidden'); 
+          if (shownCount) shownCount.textContent = ''; 
+          return; 
         }
 
-        row.innerHTML = `
-          <div class="flex-1 w-full sm:w-auto">
-            <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <span class="text-gray-500 text-xs font-mono">${escapeHtml(race.date.replace(/-/g, '/'))}</span>
-              <span class="text-gray-600 text-xs font-bold">${escapeHtml(placeName)}${rNum ? escapeHtml(rNum) : ''}</span>
-              ${horseChipHtml}
-            </div>
-
-            <div class="flex items-center gap-3">
-              ${(() => {
-                const rk = normalizeRank(race.rank);
-                if (rk.kind === 'num') {
-                  return `<div class="${getRankClass(rk.n)} rank-badge shadow-sm">${rk.n}<span class="text-[0.6rem] ml-0.5 font-normal">着</span></div>`;
-                }
-                if (rk.kind === 'text') {
-                  return `<div class="rank-other rank-badge shadow-sm">${escapeHtml(rk.text)}</div>`;
-                }
-                return '';
-              })()}
-              <span class="text-gray-900 font-bold text-lg leading-tight">
-                ${escapeHtml(race.raceName)}
-                ${race.star === true ? ' <i class="fas fa-star text-yellow-400 ml-1"></i>' : ''}
-              </span>
-            </div>
-          </div>
-          ${linksHtml}
-        `;
-
-        const chip = row.querySelector('.horse-chip');
-        if (chip) {
-          chip.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setHorseFilterByName(race.horseName);
-          });
+        if (isDefaultView && total > visible.length) { 
+          moreWrap?.classList.remove('hidden'); 
+          if (shownCount) shownCount.textContent = `${visible.length} / ${total}`; 
+        } else { 
+          moreWrap?.classList.add('hidden'); 
+          if (shownCount) shownCount.textContent = ''; 
         }
-        frag.appendChild(row);
+
+        const showHorseLabelInRows = (selectedHorseName === null);
+        const frag = document.createDocumentFragment();
+
+        for (const race of visible) {
+          try {
+            const parsed = race.parsed;
+            const isForeign = parsed && parsed.isForeign;
+            const placeName = (!isForeign && parsed) ? (PLACE_MAP[parsed.place] || '') : '海外';
+            const rNum = (!isForeign && parsed) ? (parseInt(parsed.race, 10) + 'R') : '';
+            const horseChipHtml = showHorseLabelInRows
+              ? `<button type="button" class="horse-chip text-xs px-2 py-0.5 rounded-full border border-gray-300 ml-1 text-gray-600 hover:border-green-500 hover:text-green-600 transition-colors" data-horse="${escapeHtml(race.horseName)}">${escapeHtml(race.horseName)}</button>`
+              : '';
+            const netkeibaUrl = (/^\d{12}$/.test(String(race.id))) ? getNetkeibaRaceUrl(String(race.id)) : null;
+            
+            const row = document.createElement('div');
+            // 白テーマスタイル
+            row.className = "bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-200 hover:border-green-500/50 transition-colors shadow-sm gap-3";
+            
+            const profile = getQualityProfile(race.date, race.raceName);
+
+            function btnHtml(href, title, classes, innerHtml, disabled, dim) {
+              const baseCls = `btn-icon ${classes} ${dim ? 'opacity-50' : ''} ${disabled ? 'opacity-30 pointer-events-none' : ''}`;
+              if (disabled || !href) { return `<span title="${escapeHtml(title)}" class="${baseCls}">${innerHtml}</span>`; }
+              return `<a href="${href}" target="_blank" rel="noopener" title="${escapeHtml(title)}" class="${baseCls}">${innerHtml}</a>`;
+            }
+
+            let linksHtml = '';
+            if (parsed && !parsed.isForeign) {
+              const raceHdUrl = buildViewerUrl(parsed, race.date, 'race', profile.race.hd);
+              const raceSdUrl = buildViewerUrl(parsed, race.date, 'race', profile.race.sd);
+              const paddockHdUrl = buildViewerUrl(parsed, race.date, 'paddock', profile.paddock.hd);
+              const paddockSdUrl = buildViewerUrl(parsed, race.date, 'paddock', profile.paddock.sd);
+              const timeUrl = buildViewerUrl(parsed, race.date, 'time', profile.time.hd);
+              const multiUrl = buildViewerUrl(parsed, race.date, 'multi', profile.multi.hd);
+              const patrolUrl = buildViewerUrl(parsed, race.date, 'patrol', profile.patrol.hd);
+              const raceSdDim = !!raceHdUrl && !!raceSdUrl;
+              const padSdDim = !!paddockHdUrl && !!paddockSdUrl;
+
+              linksHtml = `
+                <div class="flex items-center gap-2 mt-1 sm:mt-0">
+                  ${btnHtml(netkeibaUrl, 'netkeiba', 'btn-netkeiba', '<i class="fas fa-arrow-up-right-from-square text-xs"></i>', !netkeibaUrl, false)}
+                  ${btnHtml(raceHdUrl, 'レース(高画質)', 'btn-race', '<i class="fas fa-play text-xs"></i>', !raceHdUrl, false)}
+                  ${btnHtml(raceSdUrl, 'レース(SD)', 'btn-race', '<span class="text-[10px] font-bold">SD</span>', !raceSdUrl, raceSdDim)}
+                  ${btnHtml(paddockHdUrl, 'パドック(高画質)', 'bg-green-700 text-white hover:bg-green-600', '<i class="fas fa-horse text-xs"></i>', !paddockHdUrl, false)}
+                  ${btnHtml(paddockSdUrl, 'パドック(SD)', 'bg-green-600 text-white hover:bg-green-500', '<span class="text-[10px] font-bold">SD</span>', !paddockSdUrl, padSdDim)}
+                  ${patrolUrl ? btnHtml(patrolUrl, 'パトロール', 'bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200', '<i class="fas fa-video text-xs"></i>', false, false) : ''}
+                  ${multiUrl ? btnHtml(multiUrl, (profile.multi.hd && profile.multi.hd <= 2) ? 'マルチ(SD)' : 'マルチカメラ', 'bg-purple-700 text-white hover:bg-purple-600', '<i class="fas fa-border-all text-xs"></i>', false, false) : ''}
+                  ${timeUrl ? btnHtml(timeUrl, '時計付', 'bg-indigo-700 text-white hover:bg-indigo-600', '<i class="fas fa-stopwatch text-xs"></i>', false, false) : ''}
+                </div>
+              `;
+            } else {
+              linksHtml = `<div class="flex items-center gap-2 mt-1 sm:mt-0 opacity-60 select-none"><span class="text-xs text-gray-400"><i class="fas fa-ban mr-1"></i>映像リンクなし</span></div>`;
+            }
+
+            row.innerHTML = `
+              <div class="flex-1 w-full sm:w-auto">
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                  <span class="text-gray-500 text-xs font-mono">${escapeHtml(race.date.replace(/-/g, '/'))}</span>
+                  <span class="text-gray-600 text-xs font-bold">${escapeHtml(placeName)}${rNum ? escapeHtml(rNum) : ''}</span>
+                  ${horseChipHtml}
+                </div>
+                <div class="flex items-center gap-3">
+                  ${(() => {
+                    const rk = normalizeRank(race.rank);
+                    if (rk.kind === 'num') { return `<div class="${getRankClass(rk.n)} rank-badge shadow-sm">${rk.n}<span class="text-[0.6rem] ml-0.5 font-normal">着</span></div>`; }
+                    if (rk.kind === 'text') { return `<div class="rank-other rank-badge shadow-sm">${escapeHtml(rk.text)}</div>`; }
+                    return '';
+                  })()}
+                  <span class="text-gray-900 font-bold text-lg leading-tight">
+                    ${escapeHtml(race.raceName)}
+                    ${race.star === true ? ' <i class="fas fa-star text-yellow-400 ml-1"></i>' : ''}
+                  </span>
+                </div>
+              </div>
+              ${linksHtml}
+            `;
+            const chip = row.querySelector('.horse-chip');
+            if (chip) {
+              chip.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setHorseFilterByName(race.horseName); });
+            }
+            frag.appendChild(row);
+          } catch (e) { console.error('Row render error', e); continue; }
+        }
+        listEl.appendChild(frag);
+      } catch (e) {
+        console.error('Render list fatal error', e);
+        showLoading(false);
       }
-      listEl.appendChild(frag);
     }
 
     async function loadData() {
+      // タイムアウト用タイマー
+      const safetyTimer = setTimeout(() => {
+        showLoading(false);
+        const emptyEl = document.getElementById('emptyState');
+        const emptyMsg = document.getElementById('emptyMsg');
+        if (emptyEl && emptyMsg) {
+           emptyEl.classList.remove('hidden');
+           emptyMsg.textContent = '読み込みに時間がかかっています。データファイルを確認してください。';
+        }
+      }, 4000); // 4秒で強制解除
+
       try {
         showLoading(true, 'データ読み込み中…');
         const res = await fetch('horsesData.json', { cache: getFetchCacheMode() });
         if (!res.ok) throw new Error(`Failed to load horsesData.json: ${res.status}`);
+        
         const horses = await res.json();
+        clearTimeout(safetyTimer); // fetch成功ならタイマー解除
+
         horsesData = Array.isArray(horses) ? horses : (horses && Array.isArray(horses.horses) ? horses.horses : []);
         rawData = (horsesData || []).flatMap(h => {
           const horseName = h.name;
@@ -757,47 +695,97 @@
             ...(r.star === true ? { star: true } : {})
           }));
         }).filter(r => r.id && r.date && r.raceName && r.horseName);
+        
         init();
       } catch (e) {
         console.error(e);
+        clearTimeout(safetyTimer);
         showLoading(false);
         const emptyEl = document.getElementById('emptyState');
-        if (emptyEl) {
+        const emptyMsg = document.getElementById('emptyMsg');
+        if (emptyEl && emptyMsg) {
           emptyEl.classList.remove('hidden');
-          emptyEl.innerHTML = `
-            <p class="text-sm">データの読み込みに失敗しました</p>
-            <p class="text-xs mt-2 text-gray-500">
-              ※ file:// で開いとる場合は fetch が失敗することがあるけぇ、
-              ローカルサーバ（例: VS Code Live Server / python -m http.server）で開いてみてね。
-            </p>`;
+          emptyMsg.innerHTML = `<span class="block text-red-500 font-bold mb-1">エラーが発生しました</span><span class="text-xs">horsesData.jsonが見つからないか、形式が不正です。</span>`;
         }
       }
     }
 
     function init() {
-      showLoading(true, '一覧を準備中…');
-      const tmp = rawData.map(item => {
-        const parsed = parseNetkeibaID(item.id);
-        const placeName = (!parsed.isForeign) ? (PLACE_MAP[parsed.place] || '') : '海外';
-        const searchText = `${item.date} ${item.raceName || ''} ${item.horseName || ''} ${placeName}`.toLowerCase();
-        return { ...item, parsed, searchText };
-      });
-      racesSorted = tmp.sort((a, b) => String(b.date).localeCompare(String(a.date)));
-      updateSelectedHorseUI();
-      updateStarToggleUI();
-      wireEvents();
-      requestAnimationFrame(() => {
-        renderList();
+      try {
+        showLoading(true, '一覧を準備中…');
+        const tmp = rawData.map(item => {
+          const parsed = parseNetkeibaID(item.id);
+          const placeName = (!parsed.isForeign) ? (PLACE_MAP[parsed.place] || '') : '海外';
+          const searchText = `${item.date} ${item.raceName || ''} ${item.horseName || ''} ${placeName}`.toLowerCase();
+          return { ...item, parsed, searchText };
+        });
+        racesSorted = tmp.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+        
+        updateSelectedHorseUI();
+        updateStarToggleUI();
+        wireEvents();
+        
+        requestAnimationFrame(() => {
+          renderList();
+          showLoading(false);
+        });
+      } catch (e) {
+        console.error('Init error', e);
         showLoading(false);
-      });
+      }
     }
 
     function wireEvents() {
-      document.getElementById('toggleHorsePickerBtn')?.addEventListener('click', () => {
-        if (horsePickerOpen) closeHorsePicker();
-        else openHorsePicker();
-      });
+      document.getElementById('toggleHorsePickerBtn')?.addEventListener('click', () => { if (horsePickerOpen) closeHorsePicker(); else openHorsePicker(); });
       document.getElementById('closeHorsePickerBtn')?.addEventListener('click', closeHorsePicker);
       document.getElementById('horsePickerBackdrop')?.addEventListener('click', closeHorsePicker);
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && horsePickerOpen) close
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && horsePickerOpen) closeHorsePicker(); });
+      document.getElementById('starToggleBtn')?.addEventListener('click', () => { showStarOnly = !showStarOnly; updateStarToggleUI(); scheduleRender(true); });
+      document.getElementById('clearHorseBtn')?.addEventListener('click', clearHorseFilter);
+      const si = document.getElementById('searchInput');
+      if (si) {
+        si.addEventListener('input', () => { if (isComposing) return; scheduleRender(false); });
+        si.addEventListener('compositionstart', () => { isComposing = true; });
+        si.addEventListener('compositionend', () => { isComposing = false; scheduleRender(false); });
+      }
+      document.getElementById('moreBtn')?.addEventListener('click', () => { displayLimit = (displayLimit === Infinity) ? Infinity : (displayLimit + MORE_STEP); renderList(); });
+      document.getElementById('allBtn')?.addEventListener('click', () => { displayLimit = Infinity; renderList(); });
+      document.getElementById('scrollTopBtn')?.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      window.addEventListener('scroll', () => { const btn = document.getElementById('scrollTopBtn'); if (!btn) return; btn.classList.toggle('hidden', !(window.scrollY > 600)); }, { passive: true });
+    }
+
+    // Start
+    loadData();
+  </script>
+
+  <footer id="appFooter" class="fixed inset-x-0 bottom-0 z-50 bg-white/95 backdrop-blur border-t border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 md:px-8 py-3">
+      <div class="flex items-center gap-2 w-full">
+        <div class="relative flex-1">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="検索 (レース名など)"
+            class="w-full bg-gray-100 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-sm text-gray-800 focus:border-green-500 placeholder-gray-500 transition-colors"
+            autocomplete="off"
+          />
+        </div>
+        <button id="starToggleBtn" class="btn-icon bg-white border border-gray-300 text-sm text-gray-500 hover:bg-gray-50" type="button" title="お気に入りのみ" aria-label="お気に入りのみ" aria-pressed="false">
+          <i id="starToggleIcon" class="far fa-star"></i>
+        </button>
+        <button id="toggleHorsePickerBtn" class="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-1 whitespace-nowrap" type="button" title="馬を選ぶ" aria-label="馬を選ぶ" aria-expanded="false">
+          <i class="fas fa-horse"></i>
+          <i id="horsePickerChevron" class="fas fa-chevron-up text-[10px] text-gray-400"></i>
+        </button>
+        <div id="selectedHorseBadge" class="text-xs text-gray-500 hidden items-center whitespace-nowrap">
+          <span id="selectedHorseName"></span>
+        </div>
+        <button id="clearHorseBtn" class="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-500 hover:bg-gray-50 transition-colors hidden whitespace-nowrap" type="button" aria-label="馬フィルター解除" title="馬フィルター解除">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
