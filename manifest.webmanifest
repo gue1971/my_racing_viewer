@@ -1,11 +1,11 @@
 {
   "name": "My Racing Viewer",
-  "short_name": "Star Horse",
+  "short_name": "Race",
   "start_url": "./",
   "scope": "./",
-  "display": "fullscreen",
-  "theme_color": "#111111",
-  "background_color": "#111111",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
   "icons": [
     {
       "src": "./icons/icon-192.png",
