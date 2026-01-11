@@ -135,11 +135,9 @@
 
   <div id="horsePickerModal" class="fixed inset-0 z-40 hidden" aria-hidden="true">
     <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity" id="horsePickerBackdrop"></div>
-
     <div class="absolute inset-x-0 bottom-0">
       <div class="max-w-4xl mx-auto px-0 md:px-8">
         <div class="bg-[#eff2f5] rounded-t-2xl shadow-2xl max-h-[92vh] flex flex-col relative overflow-hidden">
-          
           <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-white z-10 sticky top-0 shadow-sm">
             <div class="flex items-center gap-2.5">
               <i class="fas fa-horse text-indigo-600"></i>
@@ -149,9 +147,84 @@
               <i class="fas fa-xmark"></i>
             </button>
           </div>
-
           <div id="horsePickerScroll" class="px-5 py-6 overflow-y-auto overscroll-contain momentum-scroll pb-32" style="padding-bottom: calc(120px + env(safe-area-inset-bottom));">
             <div id="horsePicker" class="space-y-6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="menuModal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity" id="menuBackdrop"></div>
+    <div class="absolute inset-x-0 bottom-0">
+      <div class="max-w-4xl mx-auto px-0 md:px-8">
+        <div class="bg-[#eff2f5] rounded-t-2xl shadow-2xl flex flex-col relative overflow-hidden max-h-[90vh]">
+          
+          <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-white z-10 sticky top-0 shadow-sm">
+            <div class="flex items-center gap-2.5">
+              <i class="fas fa-bars text-indigo-600"></i>
+              <span class="font-bold text-slate-800">メニュー</span>
+            </div>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200" type="button" id="closeMenuBtn">
+              <i class="fas fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="px-5 py-6 overflow-y-auto overscroll-contain momentum-scroll pb-20">
+            <div class="space-y-6">
+              
+              <div>
+                <h3 class="text-xs font-bold text-slate-500 mb-3 ml-1 uppercase tracking-wider">JRAレーシングビュアー</h3>
+                <div class="flex flex-col gap-3">
+                  <a href="https://prc.jp/jraracingviewer/index.html" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center">
+                        <i class="fas fa-home text-sm"></i>
+                      </div>
+                      <span class="font-bold text-slate-700">TOP</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-slate-300 text-xs group-hover:text-slate-400"></i>
+                  </a>
+
+                  <a href="https://prc.jp/jraracingviewer/contents/g1/search/year.html" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center">
+                        <i class="fas fa-trophy text-sm"></i>
+                      </div>
+                      <span class="font-bold text-slate-700">GⅠホースライブラリー</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-slate-300 text-xs group-hover:text-slate-400"></i>
+                  </a>
+
+                  <a href="https://prc.jp/jraracingviewer/contents/seiseki/" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <i class="fas fa-calendar-days text-sm"></i>
+                      </div>
+                      <span class="font-bold text-slate-700">レースカレンダー</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-slate-300 text-xs group-hover:text-slate-400"></i>
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-xs font-bold text-slate-500 mb-3 ml-1 uppercase tracking-wider">その他</h3>
+                <div class="flex flex-col gap-3">
+                  <a href="https://gue1971.github.io/racing-viewer-mobile/" target="_blank" rel="noopener" class="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors group">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
+                        <i class="fas fa-mobile-screen text-sm"></i>
+                      </div>
+                      <span class="font-bold text-slate-700">シンプルビュアー</span>
+                    </div>
+                    <i class="fas fa-arrow-up-right-from-square text-slate-300 text-xs group-hover:text-slate-400"></i>
+                  </a>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
@@ -183,6 +256,9 @@
 
     let horsePickerOpen = false;
     let horsePickerBuilt = false;
+    
+    // Menu Modal State
+    let menuModalOpen = false;
 
     let displayLimit = DEFAULT_LIMIT;
     let lastFilterKey = '';
@@ -407,7 +483,11 @@
       }
     }
 
+    // --- Horse Picker UI ---
     function openHorsePicker() {
+      // Close Menu if open
+      if (menuModalOpen) closeMenuModal();
+
       horsePickerOpen = true;
       if (!horsePickerBuilt) {
         buildHorsePicker();
@@ -424,8 +504,6 @@
     function updateHorsePickerUI() {
       const modal = document.getElementById('horsePickerModal');
       const btn = document.getElementById('toggleHorsePickerBtn');
-      const listSection = document.getElementById('listSection');
-      const footer = document.getElementById('appFooter');
 
       btn?.setAttribute('aria-expanded', horsePickerOpen ? 'true' : 'false');
 
@@ -436,9 +514,43 @@
       } else {
         modal?.classList.add('hidden');
         modal?.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('overflow-hidden');
+        // Only remove overflow hidden if menu is also closed
+        if (!menuModalOpen) document.body.classList.remove('overflow-hidden');
       }
     }
+
+    // --- Menu Modal UI ---
+    function openMenuModal() {
+      // Close Horse Picker if open
+      if (horsePickerOpen) closeHorsePicker();
+
+      menuModalOpen = true;
+      updateMenuModalUI();
+    }
+
+    function closeMenuModal() {
+      menuModalOpen = false;
+      updateMenuModalUI();
+    }
+
+    function updateMenuModalUI() {
+      const modal = document.getElementById('menuModal');
+      const btn = document.getElementById('toggleMenuBtn');
+
+      btn?.setAttribute('aria-expanded', menuModalOpen ? 'true' : 'false');
+
+      if (menuModalOpen) {
+        modal?.classList.remove('hidden');
+        modal?.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('overflow-hidden');
+      } else {
+        modal?.classList.add('hidden');
+        modal?.setAttribute('aria-hidden', 'true');
+        // Only remove overflow hidden if horse picker is also closed
+        if (!horsePickerOpen) document.body.classList.remove('overflow-hidden');
+      }
+    }
+
 
     function clearHorseFilter() {
       selectedHorseName = null;
@@ -458,7 +570,7 @@
     // Debounced render + IME
     // ==========================
     function scheduleRender(forceImmediate = false) {
-      if (horsePickerOpen) return;
+      if (horsePickerOpen || menuModalOpen) return;
 
       if (forceImmediate) {
         clearTimeout(searchTimer);
@@ -665,7 +777,6 @@
           const raceSdDim = !!raceHdUrl && !!raceSdUrl;
           const padSdDim = !!paddockHdUrl && !!paddockSdUrl;
 
-          // ボタン：SDも左のボタンと同じベースカラー（塗り）に統一
           linksHtml = `
             <div class="flex items-center gap-2 mt-1 sm:mt-0 flex-wrap">
               ${btnHtml(netkeibaUrl, 'netkeiba', 'btn-netkeiba', '<i class="fas fa-arrow-up-right-from-square text-xs"></i>', !netkeibaUrl, false)}
@@ -805,6 +916,7 @@
     }
 
     function wireEvents() {
+      // Horse Picker Events
       document.getElementById('toggleHorsePickerBtn')?.addEventListener('click', () => {
         if (horsePickerOpen) closeHorsePicker();
         else openHorsePicker();
@@ -812,8 +924,19 @@
       document.getElementById('closeHorsePickerBtn')?.addEventListener('click', closeHorsePicker);
       document.getElementById('horsePickerBackdrop')?.addEventListener('click', closeHorsePicker);
 
+      // Menu Modal Events
+      document.getElementById('toggleMenuBtn')?.addEventListener('click', () => {
+        if (menuModalOpen) closeMenuModal();
+        else openMenuModal();
+      });
+      document.getElementById('closeMenuBtn')?.addEventListener('click', closeMenuModal);
+      document.getElementById('menuBackdrop')?.addEventListener('click', closeMenuModal);
+
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && horsePickerOpen) closeHorsePicker();
+        if (e.key === 'Escape') {
+          if (menuModalOpen) closeMenuModal();
+          if (horsePickerOpen) closeHorsePicker();
+        }
       });
 
       document.getElementById('starToggleBtn')?.addEventListener('click', () => {
@@ -822,9 +945,7 @@
         scheduleRender(true);
       });
 
-      // 馬バッジ自体のタップで解除
       document.getElementById('selectedHorseBadge')?.addEventListener('click', clearHorseFilter);
-      // 一応バツボタンでも解除（伝播で処理されるが念のため）
       document.getElementById('clearHorseBtn')?.addEventListener('click', (e) => {
         e.stopPropagation();
         clearHorseFilter();
@@ -893,6 +1014,15 @@
           title="お気に入りのみ"
         >
           <i id="starToggleIcon" class="far fa-star"></i>
+        </button>
+
+        <button
+          id="toggleMenuBtn"
+          class="btn-icon bg-white border border-slate-300 text-slate-500 hover:bg-slate-50 shadow-sm"
+          type="button"
+          title="メニューを開く"
+        >
+          <i class="fas fa-bars"></i>
         </button>
 
         <button
