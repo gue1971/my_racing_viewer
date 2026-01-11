@@ -31,14 +31,14 @@
       align-items: center;
       width: 44px;
       height: 44px;
-      border-radius: 10px; /* 角丸も少し調整 */
+      border-radius: 10px;
       cursor: pointer;
       user-select: none;
       position: relative;
     }
     .btn-icon:active { transform: scale(0.95); }
 
-    /* リスト内のリンクボタンはサイズ維持（小さめの方が一覧性が良いため） */
+    /* リスト内のリンクボタンはサイズ維持 */
     .btn-icon-sm {
       width: 32px;
       height: 32px;
@@ -967,6 +967,11 @@
         si.addEventListener('input', () => {
           if (isComposing) return;
           scheduleRender(false);
+        });
+
+        // 検索窓フォーカスで全選択
+        si.addEventListener('focus', function() {
+          this.select();
         });
 
         si.addEventListener('compositionstart', () => {
