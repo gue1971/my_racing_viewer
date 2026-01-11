@@ -21,6 +21,7 @@
       font-family: 'Noto Sans JP', sans-serif;
       background-color: #eff2f5; 
       color: #111827;
+      /* ヘッダー固定のためpadding-top調整はmainタグで行う */
     }
 
     .btn-icon {
@@ -70,14 +71,10 @@
   
     /* ブランド・ボタンカラー定義 */
     .btn-netkeiba { background-color: #2b3a8c; color: #ffffff; }
-    
-    /* レース映像：赤系統に変更 */
-    .btn-race { background-color: #b91c1c; color: #ffffff; }      /* HD */
-    .btn-race-sd { background-color: #dc2626; color: #ffffff; }   /* SD (少し明るい赤) */
-
-    /* パドック：緑系統 */
-    .btn-paddock { background-color: #047857; color: #ffffff; }   /* HD */
-    .btn-paddock-sd { background-color: #059669; color: #ffffff; }/* SD */
+    .btn-race { background-color: #b91c1c; color: #ffffff; }
+    .btn-race-sd { background-color: #dc2626; color: #ffffff; }
+    .btn-paddock { background-color: #047857; color: #ffffff; }
+    .btn-paddock-sd { background-color: #059669; color: #ffffff; }
 
 </style>
 </head>
@@ -95,16 +92,19 @@
     </div>
   </div>
 
-  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-6 pb-28">
+  <header class="fixed top-0 inset-x-0 z-30 bg-[#eff2f5]/95 backdrop-blur-sm border-b border-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.03)] h-14 flex items-center justify-center">
+    <div class="max-w-4xl w-full mx-auto px-4 md:px-8 flex items-center justify-between">
+      <div id="listHint" class="text-xl font-bold text-slate-800 tracking-tight truncate pr-4"></div>
+      
+      <button id="scrollTopBtn" class="hidden text-xs font-bold text-indigo-600 hover:text-indigo-800 py-1.5 px-3 bg-white rounded-lg shadow-sm border border-slate-200 transition-all active:scale-95 whitespace-nowrap" type="button">
+        <i class="fas fa-arrow-up mr-1"></i>先頭へ
+      </button>
+    </div>
+  </header>
 
+  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-20 pb-28">
     <div id="listSection">
-      <div class="flex items-center justify-between mb-5 px-1">
-        <div id="listHint" class="text-xl font-bold text-slate-800 tracking-tight"></div>
-        <button id="scrollTopBtn" class="hidden text-xs font-bold text-indigo-600 hover:text-indigo-800 py-1 px-3 bg-white rounded shadow-sm border border-slate-200" type="button">
-          <i class="fas fa-arrow-up mr-1"></i>先頭へ
-        </button>
-      </div>
-
+      
       <div id="raceList" class="space-y-4"></div>
 
       <div id="moreWrap" class="hidden pt-8 pb-12 flex items-center justify-center gap-3">
@@ -379,15 +379,16 @@
 
       if (showStarOnly) {
         btn.setAttribute('aria-pressed', 'true');
-        // アクティブ時はグレーにならず、常に黄色（他の星と同じ色）にする
-        btn.classList.add('bg-white', 'text-yellow-500', 'border-yellow-400');
-        btn.classList.remove('text-slate-500', 'border-slate-300');
+        // ON: 黄色テキスト + 薄い黄色背景 + ボーダー黄色
+        btn.classList.add('bg-yellow-50', 'text-yellow-500', 'border-yellow-400');
+        btn.classList.remove('bg-white', 'text-slate-500', 'border-slate-300');
         icon.classList.remove('far');
         icon.classList.add('fas');
       } else {
         btn.setAttribute('aria-pressed', 'false');
+        // OFF: 白背景 + グレースケール
         btn.classList.add('bg-white', 'text-slate-500', 'border-slate-300');
-        btn.classList.remove('text-yellow-500', 'border-yellow-400');
+        btn.classList.remove('bg-yellow-50', 'text-yellow-500', 'border-yellow-400');
         icon.classList.remove('fas');
         icon.classList.add('far');
       }
@@ -833,7 +834,13 @@
         scheduleRender(true);
       });
 
-      document.getElementById('clearHorseBtn')?.addEventListener('click', clearHorseFilter);
+      // 馬バッジ自体のタップで解除
+      document.getElementById('selectedHorseBadge')?.addEventListener('click', clearHorseFilter);
+      // 一応バツボタンでも解除（伝播で処理されるが念のため）
+      document.getElementById('clearHorseBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearHorseFilter();
+      });
 
       const si = document.getElementById('searchInput');
       if (si) {
@@ -911,7 +918,7 @@
           <i id="horsePickerChevron" class="fas fa-chevron-up text-[10px] text-slate-400"></i>
         </button>
 
-        <div id="selectedHorseBadge" class="hidden items-center whitespace-nowrap bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full border border-indigo-200 text-xs font-bold shadow-sm">
+        <div id="selectedHorseBadge" class="hidden items-center whitespace-nowrap bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full border border-indigo-200 text-xs font-bold shadow-sm cursor-pointer hover:bg-indigo-100 transition-colors" title="タップして解除">
           <span id="selectedHorseName"></span>
           <button
             id="clearHorseBtn"
