@@ -15,17 +15,18 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
 
     body {
       font-family: 'Noto Sans JP', sans-serif;
-      /* 背景を完全な白ではなく、ごく薄いグレーにして奥行きを出す */
-      background-color: #F8FAFC; 
-      color: #1e293b;
+      /* 背景色：白を引き立てる「プラチナグレー」に変更 */
+      background-color: #eff2f5; 
+      color: #111827; /* 文字色：薄いグレーをやめ、濃い色を基本に */
     }
 
+    /* ボタンのクリック感を強化 */
     .btn-icon {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s;
       display: inline-flex;
       justify-content: center;
       align-items: center;
@@ -36,8 +37,7 @@
       user-select: none;
       position: relative;
     }
-    .btn-icon:hover { transform: translateY(-1px); filter: brightness(0.95); }
-    .btn-icon:active { transform: translateY(0); }
+    .btn-icon:active { transform: scale(0.95); }
 
     .rank-badge {
       min-width: 24px;
@@ -45,24 +45,24 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 6px; /* 丸から少し四角くモダンに */
+      border-radius: 6px;
       font-weight: 700;
       font-size: 0.75rem;
       padding: 0 6px;
       line-height: 1;
       user-select: none;
-      border: 1px solid transparent;
     }
-    /* 着順の色を「薄い背景+濃い文字」の上品なスタイルに */
-    .rank-1 { background-color: #FEF3C7; color: #92400E; border-color: #FDE68A; }
-    .rank-2 { background-color: #F1F5F9; color: #334155; border-color: #E2E8F0; }
-    .rank-3 { background-color: #FFEDD5; color: #9A3412; border-color: #FED7AA; }
-    .rank-other { background-color: transparent; color: #94a3b8; border-color: #E2E8F0; }
+    /* 着順バッジ：視認性を高めるため少し濃い目に */
+    .rank-1 { background-color: #f59e0b; color: #fff; box-shadow: 0 1px 2px rgba(245,158,11,0.3); }
+    .rank-2 { background-color: #94a3b8; color: #fff; }
+    .rank-3 { background-color: #d97706; color: #fff; }
+    .rank-other { background-color: #e2e8f0; color: #64748b; }
 
     input:focus {
       outline: none;
-      border-color: #6366f1; /* インディゴ系で知的に */
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      border-color: #4f46e5;
+      background-color: #fff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
 
     ::-webkit-scrollbar { width: 6px; }
@@ -71,26 +71,25 @@
 
     .momentum-scroll { -webkit-overflow-scrolling: touch; }
   
-    /* ブランドカラー定義 */
-    .btn-netkeiba { background-color: #3850B0; color: #ffffff; border: 1px solid #3850B0; }
-    /* レース再生ボタンは視認性重視で濃いダークグレー */
-    .btn-race-hd { background-color: #1e293b; color: #ffffff; border: 1px solid #1e293b; } 
-    /* SDやサブボタンは白背景＋枠線 */
-    .btn-race-sd { background-color: #ffffff; color: #475569; border: 1px solid #e2e8f0; }
+    /* ブランドカラー定義：はっきりした色味に */
+    .btn-netkeiba { background-color: #2b3a8c; color: #ffffff; }
+    /* レース再生ボタン（HD）：濃いグレーで引き締め */
+    .btn-race-hd { background-color: #334155; color: #ffffff; } 
+    /* SDボタン：白背景＋しっかりした枠線 */
+    .btn-race-sd { background-color: #ffffff; color: #475569; border: 1px solid #cbd5e1; }
 
 </style>
 </head>
 
 <body class="min-h-screen selection:bg-indigo-100 selection:text-indigo-900">
 
-  <div id="loadingOverlay" class="fixed inset-0 z-[60] flex items-center justify-center bg-white/90 backdrop-blur-sm">
+  <div id="loadingOverlay" class="fixed inset-0 z-[60] flex items-center justify-center bg-white/95 backdrop-blur-sm">
     <div class="flex flex-col items-center gap-4">
       <div class="relative">
-        <div class="w-12 h-12 rounded-full border-4 border-slate-100 border-t-indigo-600 animate-spin"></div>
+        <div class="w-10 h-10 rounded-full border-4 border-slate-200 border-t-indigo-600 animate-spin"></div>
       </div>
       <div class="text-center">
-        <div id="loadingText" class="text-sm font-bold text-slate-700">データ読み込み中…</div>
-        <div class="text-xs text-slate-400 mt-1">（初回は少し時間かかることがあるよ）</div>
+        <div id="loadingText" class="text-sm font-bold text-slate-800">読み込んでいます</div>
       </div>
     </div>
   </div>
@@ -99,36 +98,35 @@
 
     <div id="listSection">
       <div class="flex items-center justify-between mb-4 px-1">
-        <div id="listHint" class="text-xs font-medium text-slate-500"></div>
-        <button id="scrollTopBtn" class="hidden text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors py-1 px-2 rounded hover:bg-indigo-50" type="button">
+        <div id="listHint" class="text-xs font-bold text-slate-600"></div>
+        <button id="scrollTopBtn" class="hidden text-xs font-bold text-indigo-600 hover:text-indigo-800 py-1 px-3 bg-white rounded shadow-sm border border-slate-200" type="button">
           <i class="fas fa-arrow-up mr-1"></i>先頭へ
         </button>
       </div>
 
       <div id="raceList" class="space-y-4"></div>
 
-      <div id="moreWrap" class="hidden pt-6 pb-12 flex items-center justify-center gap-3">
+      <div id="moreWrap" class="hidden pt-8 pb-12 flex items-center justify-center gap-3">
         <button id="moreBtn"
-          class="bg-white border border-slate-200 shadow-sm rounded-full px-6 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-800 hover:border-slate-300 transition-all active:scale-95"
+          class="bg-white border border-slate-300 shadow-sm rounded-full px-8 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-95"
           type="button"
         >
           もっと見る
         </button>
         <button id="allBtn"
-          class="text-xs text-slate-400 hover:text-slate-600 underline underline-offset-4 decoration-slate-300 px-2"
+          class="text-xs font-bold text-slate-500 hover:text-slate-700 underline underline-offset-4 decoration-slate-300 px-2"
           type="button"
         >
           全件表示
         </button>
-        <div id="shownCount" class="text-xs text-slate-400 ml-1"></div>
+        <div id="shownCount" class="text-xs font-medium text-slate-500 ml-1"></div>
       </div>
 
       <div id="emptyState" class="text-center py-20 hidden">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-200 text-slate-500 mb-4">
           <i class="fas fa-search text-2xl"></i>
         </div>
-        <p class="text-slate-600 font-medium">条件に合うレースが見つかりません</p>
-        <p class="text-xs text-slate-400 mt-2">検索条件を変更してみてください</p>
+        <p class="text-slate-700 font-bold">該当データなし</p>
       </div>
     
       <div aria-hidden="true" style="height: calc(96px + env(safe-area-inset-bottom));"></div>
@@ -136,26 +134,24 @@
   </main>
 
   <div id="horsePickerModal" class="fixed inset-0 z-40 hidden" aria-hidden="true">
-    <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-[2px] transition-opacity" id="horsePickerBackdrop"></div>
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity" id="horsePickerBackdrop"></div>
 
     <div class="absolute inset-x-0 bottom-0">
       <div class="max-w-4xl mx-auto px-0 md:px-8">
-        <div class="bg-white rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] max-h-[85vh] flex flex-col relative overflow-hidden">
+        <div class="bg-[#eff2f5] rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col relative overflow-hidden">
           
-          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white z-10 sticky top-0">
+          <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-white z-10 sticky top-0 shadow-sm">
             <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
-                <i class="fas fa-horse text-sm"></i>
-              </div>
+              <i class="fas fa-horse text-indigo-600"></i>
               <span class="font-bold text-slate-800">馬を選ぶ</span>
             </div>
-            <button class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" type="button" id="closeHorsePickerBtn" aria-label="閉じる">
-              <i class="fas fa-xmark text-lg"></i>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200" type="button" id="closeHorsePickerBtn">
+              <i class="fas fa-xmark"></i>
             </button>
           </div>
 
-          <div id="horsePickerScroll" class="px-5 py-6 overflow-y-auto overscroll-contain momentum-scroll bg-[#F8FAFC]" style="padding-bottom: calc(32px + env(safe-area-inset-bottom));">
-            <div id="horsePicker" class="space-y-8"></div>
+          <div id="horsePickerScroll" class="px-5 py-6 overflow-y-auto overscroll-contain momentum-scroll" style="padding-bottom: calc(32px + env(safe-area-inset-bottom));">
+            <div id="horsePicker" class="space-y-6"></div>
           </div>
         </div>
       </div>
@@ -382,14 +378,14 @@
 
       if (showStarOnly) {
         btn.setAttribute('aria-pressed', 'true');
-        btn.classList.add('bg-yellow-50', 'text-yellow-500', 'border-yellow-200');
+        btn.classList.add('bg-yellow-50', 'text-yellow-600', 'border-yellow-300');
         btn.classList.remove('bg-white', 'text-slate-400', 'border-slate-200');
         icon.classList.remove('far');
         icon.classList.add('fas');
       } else {
         btn.setAttribute('aria-pressed', 'false');
         btn.classList.add('bg-white', 'text-slate-400', 'border-slate-200');
-        btn.classList.remove('bg-yellow-50', 'text-yellow-500', 'border-yellow-200');
+        btn.classList.remove('bg-yellow-50', 'text-yellow-600', 'border-yellow-300');
         icon.classList.remove('fas');
         icon.classList.add('far');
       }
@@ -441,7 +437,6 @@
       if (horsePickerOpen) {
         modal?.classList.remove('hidden');
         modal?.setAttribute('aria-hidden', 'false');
-        // 背景スクロールロック
         document.body.classList.add('overflow-hidden');
         chev?.classList.remove('fa-chevron-up');
         chev?.classList.add('fa-chevron-down');
@@ -515,25 +510,26 @@
         hs.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
 
         const section = document.createElement('section');
-        section.className = 'bg-white rounded-xl p-4 shadow-sm border border-slate-100';
+        // 背景や枠線を削除し、シンプルなグループ分けに
+        section.className = 'mb-6';
 
         const title = document.createElement('div');
-        title.className = 'flex items-baseline justify-between mb-3';
+        title.className = 'flex items-baseline gap-2 mb-2 px-1';
+        // 年号をはっきり濃く
         title.innerHTML = `
-          <div class="text-sm font-bold text-slate-700">
-            ${escapeHtml(y)}<span class="text-xs font-normal text-slate-400 ml-1">年生まれ</span>
+          <div class="text-base font-bold text-slate-700">
+            ${escapeHtml(y)}<span class="text-xs font-normal text-slate-500 ml-1">年生まれ</span>
           </div>
-          <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">${hs.length}</span>
         `;
 
         const grid = document.createElement('div');
-        grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-2';
+        grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-3';
 
         for (const h of hs) {
           const btn = document.createElement('button');
           btn.type = 'button';
-          // カード風ボタンに
-          btn.className = 'bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:border-indigo-300 hover:text-indigo-700 hover:shadow-sm transition-all text-left min-h-[44px] truncate';
+          // ボタン：白背景 + 影 + 枠線 で「押せる感」を強調
+          btn.className = 'bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm font-medium text-slate-800 shadow-sm hover:border-indigo-400 hover:text-indigo-700 hover:shadow-md transition-all text-left min-h-[48px] truncate';
           btn.textContent = h.name || '';
           btn.addEventListener('click', () => setHorseFilterByName(h.name || ''));
           grid.appendChild(btn);
@@ -577,7 +573,7 @@
           if (selectedHorseName) parts.push(`${selectedHorseName}`);
           if (searchVal) parts.push(`"${searchVal}"`);
           if (showStarOnly) parts.push('お気に入り');
-          listHint.innerHTML = parts.join(' <span class="text-slate-300 mx-1">/</span> ') || '';
+          listHint.innerHTML = parts.join(' <span class="text-slate-400 mx-1">/</span> ') || '';
         }
       }
 
@@ -645,23 +641,22 @@
         const placeName = (!isForeign && parsed) ? (PLACE_MAP[parsed.place] || '') : '海外';
         const rNum = (!isForeign && parsed) ? (parseInt(parsed.race, 10) + 'R') : '';
 
-        // 馬名チップ：タグ風にモダン化
+        // 馬名チップ：文字色を濃く
         const horseChipHtml = showHorseLabelInRows
           ? `<button type="button"
-                class="horse-chip ml-2 text-[10px] px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-500 hover:border-indigo-300 hover:text-indigo-600 hover:bg-white transition-colors"
+                class="horse-chip ml-2 text-[11px] font-medium px-2 py-0.5 rounded border border-slate-300 bg-slate-50 text-slate-700 hover:border-indigo-400 hover:text-indigo-800 hover:bg-white transition-colors"
                 data-horse="${escapeHtml(race.horseName)}">${escapeHtml(race.horseName)}</button>`
           : '';
 
         const netkeibaUrl = (/^\d{12}$/.test(String(race.id))) ? getNetkeibaRaceUrl(String(race.id)) : null;
 
         const row = document.createElement('div');
-        // カードデザイン: 浮き上がりシャドウを少し強めに
-        row.className = "bg-white rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow gap-4";
+        // カード：白背景 + 影
+        row.className = "bg-white rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between border border-slate-200 shadow-sm hover:shadow-md transition-shadow gap-4";
         
         const profile = getQualityProfile(race.date, race.raceName);
 
         function btnHtml(href, title, classes, innerHtml, disabled, dim) {
-          // ボタン共通クラス
           const baseCls = `btn-icon rounded-md ${classes} ${dim ? 'opacity-50' : ''} ${disabled ? 'opacity-30 pointer-events-none' : ''}`;
           if (disabled || !href) {
             return `<span title="${escapeHtml(title)}" class="${baseCls}">${innerHtml}</span>`;
@@ -683,7 +678,7 @@
           const raceSdDim = !!raceHdUrl && !!raceSdUrl;
           const padSdDim = !!paddockHdUrl && !!paddockSdUrl;
 
-          // ボタン配色: フラットだが視認性の良い色使いに
+          // ボタン：彩度を上げ、濃くして視認性アップ
           linksHtml = `
             <div class="flex items-center gap-2 mt-1 sm:mt-0 flex-wrap">
               ${btnHtml(netkeibaUrl, 'netkeiba', 'btn-netkeiba', '<i class="fas fa-arrow-up-right-from-square text-xs"></i>', !netkeibaUrl, false)}
@@ -691,22 +686,22 @@
               ${btnHtml(raceHdUrl, 'レース(高画質)', 'btn-race-hd shadow-sm', '<i class="fas fa-play text-xs"></i>', !raceHdUrl, false)}
               ${btnHtml(raceSdUrl, 'レース(SD)', 'btn-race-sd', '<span class="text-[10px] font-bold">SD</span>', !raceSdUrl, raceSdDim)}
 
-              <div class="w-px h-6 bg-slate-200 mx-1 hidden sm:block"></div>
+              <div class="w-px h-6 bg-slate-300 mx-1 hidden sm:block"></div>
 
-              ${btnHtml(paddockHdUrl, 'パドック', 'bg-emerald-600 text-white shadow-sm border border-emerald-600 hover:bg-emerald-700', '<i class="fas fa-horse text-xs"></i>', !paddockHdUrl, false)}
-              ${btnHtml(paddockSdUrl, 'パドック(SD)', 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50', '<span class="text-[10px] font-bold">SD</span>', !paddockSdUrl, padSdDim)}
+              ${btnHtml(paddockHdUrl, 'パドック', 'bg-emerald-700 text-white shadow-sm hover:bg-emerald-800', '<i class="fas fa-horse text-xs"></i>', !paddockHdUrl, false)}
+              ${btnHtml(paddockSdUrl, 'パドック(SD)', 'bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-50', '<span class="text-[10px] font-bold">SD</span>', !paddockSdUrl, padSdDim)}
 
-              ${patrolUrl ? btnHtml(patrolUrl, 'パトロール', 'bg-slate-500 text-white hover:bg-slate-600 shadow-sm', '<i class="fas fa-video text-xs"></i>', false, false) : ''}
+              ${patrolUrl ? btnHtml(patrolUrl, 'パトロール', 'bg-slate-600 text-white hover:bg-slate-700 shadow-sm', '<i class="fas fa-video text-xs"></i>', false, false) : ''}
 
-              ${multiUrl ? btnHtml(multiUrl, 'マルチ', 'bg-purple-600 text-white hover:bg-purple-700 shadow-sm', '<i class="fas fa-border-all text-xs"></i>', false, false) : ''}
+              ${multiUrl ? btnHtml(multiUrl, 'マルチ', 'bg-purple-700 text-white hover:bg-purple-800 shadow-sm', '<i class="fas fa-border-all text-xs"></i>', false, false) : ''}
 
-              ${timeUrl ? btnHtml(timeUrl, '時計付', 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm', '<i class="fas fa-stopwatch text-xs"></i>', false, false) : ''}
+              ${timeUrl ? btnHtml(timeUrl, '時計付', 'bg-indigo-700 text-white hover:bg-indigo-800 shadow-sm', '<i class="fas fa-stopwatch text-xs"></i>', false, false) : ''}
             </div>
           `;
         } else {
           linksHtml = `
             <div class="flex items-center gap-2 mt-1 sm:mt-0 opacity-50 select-none px-2">
-              <span class="text-xs text-slate-400"><i class="fas fa-ban mr-1"></i>映像なし</span>
+              <span class="text-xs text-slate-500 font-bold"><i class="fas fa-ban mr-1"></i>映像なし</span>
             </div>
           `;
         }
@@ -715,8 +710,8 @@
         row.innerHTML = `
           <div class="flex-1 w-full sm:w-auto min-w-0">
             <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span class="text-slate-400 text-xs font-mono">${escapeHtml(race.date.replace(/-/g, '/'))}</span>
-              <span class="text-slate-500 text-xs font-bold bg-slate-100 px-1.5 py-0.5 rounded">${escapeHtml(placeName)}${rNum ? escapeHtml(rNum) : ''}</span>
+              <span class="text-slate-600 text-xs font-mono font-medium">${escapeHtml(race.date.replace(/-/g, '/'))}</span>
+              <span class="text-slate-700 text-xs font-bold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">${escapeHtml(placeName)}${rNum ? escapeHtml(rNum) : ''}</span>
               ${horseChipHtml}
             </div>
 
@@ -724,19 +719,19 @@
               ${(() => {
                 const rk = normalizeRank(race.rank);
                 if (rk.kind === 'num') {
-                  return `<div class="${getRankClass(rk.n)} rank-badge">
-                    ${rk.n}<span class="text-[0.6rem] ml-0.5 font-normal opacity-70">着</span>
+                  return `<div class="${getRankClass(rk.n)} rank-badge shadow-sm">
+                    ${rk.n}<span class="text-[0.6rem] ml-0.5 font-normal opacity-90">着</span>
                   </div>`;
                 }
                 if (rk.kind === 'text') {
-                  return `<div class="rank-other rank-badge border border-slate-200">${escapeHtml(rk.text)}</div>`;
+                  return `<div class="rank-other rank-badge border border-slate-300">${escapeHtml(rk.text)}</div>`;
                 }
                 return '';
               })()}
               <div class="truncate">
-                <span class="text-slate-800 font-bold text-lg leading-tight tracking-tight">
+                <span class="text-[#111827] font-bold text-lg leading-tight tracking-tight">
                   ${escapeHtml(race.raceName)}
-                  ${race.star === true ? ' <i class="fas fa-star text-yellow-400 ml-1 text-sm"></i>' : ''}
+                  ${race.star === true ? ' <i class="fas fa-star text-yellow-500 ml-1 text-sm"></i>' : ''}
                 </span>
               </div>
             </div>
@@ -764,7 +759,7 @@
     // ==========================
     async function loadData() {
       try {
-        showLoading(true, 'データ読み込み中…');
+        showLoading(true, '読み込んでいます');
 
         const res = await fetch('horsesData.json', { cache: getFetchCacheMode() });
         if (!res.ok) throw new Error(`Failed to load horsesData.json: ${res.status}`);
@@ -794,10 +789,8 @@
           emptyEl.classList.remove('hidden');
           emptyEl.innerHTML = `
             <div class="text-slate-400 text-4xl mb-2"><i class="fas fa-triangle-exclamation"></i></div>
-            <p class="text-sm text-slate-600">データの読み込みに失敗しました</p>
-            <p class="text-xs mt-2 text-slate-400">
-              ローカル環境の場合はWebサーバー経由で開いてください
-            </p>`;
+            <p class="text-sm text-slate-700 font-bold">データを読み込めませんでした</p>
+          `;
         }
       }
     }
@@ -885,24 +878,24 @@
     loadData();
   </script>
 
-  <footer id="appFooter" class="fixed inset-x-0 bottom-0 z-50 bg-white/90 backdrop-blur-md border-t border-slate-200 pb-safe">
+  <footer id="appFooter" class="fixed inset-x-0 bottom-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-300 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
     <div class="max-w-4xl mx-auto px-4 md:px-8 py-3">
       <div class="flex items-center gap-3 w-full">
 
         <div class="relative flex-1 group">
-          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs transition-colors group-focus-within:text-indigo-500"></i>
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs transition-colors group-focus-within:text-indigo-600"></i>
           <input
             type="text"
             id="searchInput"
             placeholder="検索 (レース名など)"
-            class="w-full bg-slate-100 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-sm text-slate-800 focus:bg-white focus:border-indigo-500 placeholder-slate-400 transition-all shadow-inner"
+            class="w-full bg-[#f1f5f9] border border-slate-300 rounded-xl pl-9 pr-3 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-indigo-500 placeholder-slate-500 transition-all shadow-inner font-medium"
             autocomplete="off"
           />
         </div>
 
         <button
           id="starToggleBtn"
-          class="btn-icon bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 shadow-sm"
+          class="btn-icon bg-white border border-slate-300 text-slate-500 hover:text-slate-700 hover:border-slate-400 shadow-sm"
           type="button"
           title="お気に入りのみ"
         >
@@ -911,7 +904,7 @@
 
         <button
           id="toggleHorsePickerBtn"
-          class="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-600 font-bold hover:border-slate-300 hover:text-slate-800 transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
+          class="bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-700 font-bold hover:border-slate-400 hover:text-slate-900 transition-all shadow-sm flex items-center gap-2 whitespace-nowrap"
           type="button"
           title="馬を選ぶ"
         >
@@ -920,11 +913,11 @@
           <i id="horsePickerChevron" class="fas fa-chevron-up text-[10px] text-slate-400"></i>
         </button>
 
-        <div id="selectedHorseBadge" class="hidden items-center whitespace-nowrap bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-100 text-xs font-bold">
+        <div id="selectedHorseBadge" class="hidden items-center whitespace-nowrap bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full border border-indigo-200 text-xs font-bold shadow-sm">
           <span id="selectedHorseName"></span>
           <button
             id="clearHorseBtn"
-            class="ml-2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-indigo-200 text-indigo-400 hover:text-indigo-800 transition-colors hidden"
+            class="ml-2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-indigo-200 text-indigo-400 hover:text-indigo-900 transition-colors hidden"
             type="button"
           >
             <i class="fas fa-xmark text-[10px]"></i>
@@ -936,7 +929,6 @@
   </footer>
 
   <style>
-    /* Safe Area for iPhone X+ */
     .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
   </style>
 
