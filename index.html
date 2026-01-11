@@ -2,14 +2,14 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>My Racing Viewer</title>
 
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-  <meta name="theme-color" content="#111111" />
+  <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
@@ -19,8 +19,9 @@
 
     body {
       font-family: 'Noto Sans JP', sans-serif;
-      background-color: #1a1a1a;
-      color: #e5e5e5;
+      /* 背景を白に近いグレー、文字を濃いグレーに変更 */
+      background-color: #f9fafb;
+      color: #111827;
     }
 
     .btn-icon {
@@ -34,7 +35,7 @@
       cursor: pointer;
       user-select: none;
     }
-    .btn-icon:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-icon:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
     .rank-badge {
       min-width: 24px;
@@ -52,7 +53,8 @@
     .rank-1 { background-color: #fbbf24; color: #78350f; }
     .rank-2 { background-color: #94a3b8; color: #1e293b; }
     .rank-3 { background-color: #b45309; color: #fffbeb; }
-    .rank-other { background-color: #374151; color: #d1d5db; }
+    /* 着外をライトグレーに変更 */
+    .rank-other { background-color: #e5e7eb; color: #374151; }
 
     input:focus {
       outline: none;
@@ -61,54 +63,52 @@
     }
 
     ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #1a1a1a; }
-    ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+    /* スクロールバーも明るく */
+    ::-webkit-scrollbar-track { background: #f9fafb; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
 
-    /* iOSでモーダル内スクロールが気持ちよくなるやつ */
     .momentum-scroll { -webkit-overflow-scrolling: touch; }
   
     /* Custom brand-ish colors */
     .btn-netkeiba { background-color: #3850B0; color: #ffffff; }
-    .btn-race { background-color: #783020; color: #ffffff; } /* 海老茶っぽい */
+    .btn-race { background-color: #9f4636; color: #ffffff; } /* 少し明るく調整 */
 
 </style>
 </head>
 
 <body class="min-h-screen">
 
-  <!-- Loading Overlay（初回の不安を消す） -->
-  <div id="loadingOverlay" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/70">
-    <div class="bg-gray-900 border border-gray-700 rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3">
-      <i class="fas fa-spinner fa-spin text-gray-200"></i>
+  <div id="loadingOverlay" class="fixed inset-0 z-[60] flex items-center justify-center bg-white/80 backdrop-blur-sm">
+    <div class="bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3">
+      <i class="fas fa-spinner fa-spin text-gray-400"></i>
       <div>
-        <div id="loadingText" class="text-sm font-bold text-gray-200">データ読み込み中…</div>
+        <div id="loadingText" class="text-sm font-bold text-gray-700">データ読み込み中…</div>
         <div class="text-xs text-gray-400 mt-0.5">（初回は少し時間かかることがあるよ）</div>
       </div>
     </div>
   </div>
-  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-4" pb-28">
 
-    <!-- List Section（馬選択モーダル中は隠す） -->
+  <main class="max-w-4xl mx-auto px-4 md:px-8 pt-4 pb-28">
+
     <div id="listSection">
       <div class="flex items-center justify-between mb-3">
         <div id="listHint" class="text-xs text-gray-500"></div>
-        <button id="scrollTopBtn" class="hidden text-xs text-gray-400 hover:text-gray-200" type="button">
+        <button id="scrollTopBtn" class="hidden text-xs text-gray-400 hover:text-gray-600" type="button">
           <i class="fas fa-arrow-up mr-1"></i>先頭へ
         </button>
       </div>
 
       <div id="raceList" class="space-y-3"></div>
 
-      <!-- もっと見る -->
       <div id="moreWrap" class="hidden pt-4 pb-12 flex items-center justify-center gap-2">
         <button id="moreBtn"
-          class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-sm text-gray-200 hover:border-gray-600 transition-colors"
+          class="bg-white border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
           type="button"
         >
           もっと見る
         </button>
         <button id="allBtn"
-          class="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-sm text-gray-200 hover:border-gray-600 transition-colors"
+          class="bg-white border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
           type="button"
         >
           全件
@@ -116,28 +116,26 @@
         <div id="shownCount" class="text-xs text-gray-500 ml-1"></div>
       </div>
 
-      <div id="emptyState" class="text-center py-12 text-gray-600 hidden">
+      <div id="emptyState" class="text-center py-12 text-gray-500 hidden">
         <p class="text-sm">データが見つかりません</p>
       </div>
     
-      <!-- Footer spacer (so last row won't be hidden behind footer) -->
       <div aria-hidden="true" style="height: calc(96px + env(safe-area-inset-bottom));"></div>
-</div>
+    </div>
   </main>
 
-  <!-- Horse Picker Modal（ボトムシート） -->
   <div id="horsePickerModal" class="fixed inset-0 z-40 hidden" aria-hidden="true">
-    <div class="absolute inset-0 bg-black/60" id="horsePickerBackdrop"></div>
+    <div class="absolute inset-0 bg-black/30" id="horsePickerBackdrop"></div>
 
     <div class="absolute inset-x-0 bottom-0">
       <div class="max-w-4xl mx-auto px-0 md:px-8">
-        <div class="bg-gray-900 border border-gray-700 rounded-t-2xl shadow-2xl max-h-[92vh] flex flex-col">
-          <div class="px-4 md:px-0 py-3 border-b border-gray-700 flex items-center justify-between">
-            <div class="text-sm font-bold text-gray-200 flex items-center gap-2">
-              <i class="fas fa-horse"></i>
+        <div class="bg-white border-t border-gray-200 md:border md:rounded-t-2xl shadow-2xl max-h-[92vh] flex flex-col">
+          <div class="px-4 md:px-0 py-3 border-b border-gray-100 flex items-center justify-between">
+            <div class="text-sm font-bold text-gray-800 flex items-center gap-2">
+              <i class="fas fa-horse text-gray-400"></i>
               <span>馬を選ぶ</span>
             </div>
-            <button class="btn-icon bg-gray-800 border border-gray-700 hover:border-gray-600" type="button" id="closeHorsePickerBtn" aria-label="閉じる">
+            <button class="btn-icon bg-white border border-gray-200 text-gray-500 hover:bg-gray-50" type="button" id="closeHorsePickerBtn" aria-label="閉じる">
               <i class="fas fa-xmark"></i>
             </button>
           </div>
@@ -154,9 +152,9 @@
     // ==========================
     // Settings (5000件想定)
     // ==========================
-    const DEFAULT_LIMIT = 50;   // デフォルト表示は直近50件
-    const MORE_STEP = 100;      // 「もっと見る」で+100件ずつ
-    const SEARCH_DEBOUNCE_MS = 220; // 150-250msの範囲（中間くらい）
+    const DEFAULT_LIMIT = 50;
+    const MORE_STEP = 100;
+    const SEARCH_DEBOUNCE_MS = 220;
 
     const PLACE_MAP = {
       '01': '札幌', '02': '函館', '03': '福島', '04': '新潟', '05': '東京',
@@ -169,7 +167,7 @@
     let horsesData = [];
     let rawData = [];
 
-    let racesSorted = [];     // 日付降順で固定（以後ソートしない）
+    let racesSorted = [];
     let selectedHorseName = null;
     let showStarOnly = false;
 
@@ -179,7 +177,6 @@
     let displayLimit = DEFAULT_LIMIT;
     let lastFilterKey = '';
 
-    // 検索系
     let isComposing = false;
     let searchTimer = null;
 
@@ -228,99 +225,71 @@
       return `https://db.netkeiba.com/race/${raceId}/`;
     }
 
-    
     function isGradedRace(raceName) {
       const s = (raceName || '');
-      // GI/GII/GIII, G1/G2/G3, JpnI/JpnII/JpnIII, (重賞) 等ざっくり拾う
       return /(\bGI\b|\bGII\b|\bGIII\b|\bG1\b|\bG2\b|\bG3\b|JpnI|JpnII|JpnIII|重賞)/i.test(s);
     }
 
     function yyyymmFromDate(dateStr) {
-      // dateStr: YYYY-MM-DD
       const m = /^(\d{4})-(\d{2})/.exec(dateStr || '');
       if (!m) return null;
       return parseInt(m[1] + m[2], 10);
     }
 
-    /**
-     * 画質・対応状況のプロファイル
-     * - race/paddock は「HD(=高画質)」と「SD(=低画質)」を両方用意する前提
-     * - multi/patrol/time は、対応してない年代はボタン自体出さない
-     */
     function getQualityProfile(dateStr, raceName) {
       const ym = yyyymmFromDate(dateStr);
       const graded = isGradedRace(raceName);
 
-      // デフォルト（安全側）
       const profile = {
         graded,
-        race:    { hd: null, sd: 2 },      // 古いところは q2 が基本
-        paddock: { hd: null, sd: null },   // 基本は無し
+        race:    { hd: null, sd: 2 },
+        paddock: { hd: null, sd: null },
         time:    { hd: null },
         multi:   { hd: null },
-        patrol:  { hd: null, sd: null }    // 古い重賞で 1(2) がありそうなので sd を持てるように
+        patrol:  { hd: null, sd: null }
       };
 
       if (!ym) return profile;
 
-      // ～2013/12：レースのみ（quality=2）
       if (ym < 201401) {
         return profile;
       }
-
-      // 2014/01～2014/12：パドック q1 / レース q2
       if (ym >= 201401 && ym < 201501) {
         profile.paddock.sd = 1;
         return profile;
       }
-
-      // 2015/01～2016/12
       if (ym >= 201501 && ym < 201701) {
         profile.paddock.sd = 1;
         if (graded) {
-          // マルチ：2017/01より前は multi_all 側（quality=1）
           profile.multi.hd = 1;
-          // パトロール：2015/2016は q1（q2が予備で効く可能性）
           profile.patrol.hd = 2;
         }
         return profile;
       }
-
-      // 2017/01～2020/09
       if (ym >= 201701 && ym < 202010) {
         profile.paddock.sd = 1;
-
         profile.race.hd = graded ? 5 : 4;
         profile.race.sd = 2;
-
         if (graded) {
           profile.multi.hd = 4;
           profile.patrol.hd = 5;
         }
         return profile;
       }
-
-      // 2020/10～2022/09：全部 パドック q4 / レース q5 / マルチ q4 / パトロール q5
       if (ym >= 202010 && ym < 202210) {
         profile.paddock.hd = 4;
         profile.paddock.sd = 1;
-
         profile.race.hd = 5;
         profile.race.sd = 2;
-
         profile.multi.hd = 4;
         profile.patrol.hd = 5;
         return profile;
       }
-
-      // 2022/10～：上に加えて 時計付 q5
       if (ym >= 202210) {
         profile.paddock.hd = 4;
         profile.paddock.sd = 1;
-
         profile.race.hd = 5;
         profile.race.sd = 2;
-
         profile.time.hd = 5;
         profile.multi.hd = 4;
         profile.patrol.hd = 5;
@@ -368,12 +337,10 @@
         return `${base}_m&quality=${quality}`;
       }
       if (kind === 'patrol') {
-        // パトロールは view=1
         return `${base}&quality=${quality}&view=1`;
       }
       return null;
     }
-
 
     function normalizeRank(rank) {
       if (typeof rank === 'number' && Number.isFinite(rank)) return { kind: 'num', n: rank };
@@ -414,10 +381,10 @@
       if (showStarOnly) {
         btn.setAttribute('aria-pressed', 'true');
         icon.classList.remove('far');
-        icon.classList.add('fas', 'text-yellow-400');
+        icon.classList.add('fas', 'text-yellow-500'); // 黄色を少し濃く
       } else {
         btn.setAttribute('aria-pressed', 'false');
-        icon.classList.remove('fas', 'text-yellow-400');
+        icon.classList.remove('fas', 'text-yellow-500');
         icon.classList.add('far');
       }
     }
@@ -514,7 +481,6 @@
 
       clearTimeout(searchTimer);
       searchTimer = setTimeout(() => {
-        // IME変換中は描画しない（compositionendで呼ぶ）
         if (isComposing) return;
         renderList();
       }, SEARCH_DEBOUNCE_MS);
@@ -527,7 +493,7 @@
       const pickerEl = document.getElementById('horsePicker');
       if (!pickerEl) return;
 
-      const groups = new Map(); // year -> horses[]
+      const groups = new Map();
       for (const h of (horsesData || [])) {
         const y = getBirthYearFromHorse(h);
         const key = (y === null) ? '不明' : String(y);
@@ -538,7 +504,7 @@
       const years = Array.from(groups.keys()).sort((a, b) => {
         if (a === '不明') return 1;
         if (b === '不明') return -1;
-        return parseInt(b, 10) - parseInt(a, 10); // 若い年が上
+        return parseInt(b, 10) - parseInt(a, 10);
       });
 
       pickerEl.innerHTML = '';
@@ -552,9 +518,10 @@
 
         const title = document.createElement('div');
         title.className = 'flex items-baseline justify-between';
+        // 見出しの色変更
         title.innerHTML = `
-          <div class="text-sm font-bold text-gray-300">
-            ${escapeHtml(y)}<span class="text-xs font-normal text-gray-500 ml-1">(${hs.length})</span>
+          <div class="text-sm font-bold text-gray-500">
+            ${escapeHtml(y)}<span class="text-xs font-normal text-gray-400 ml-1">(${hs.length})</span>
           </div>
         `;
 
@@ -564,7 +531,8 @@
         for (const h of hs) {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 hover:border-gray-600 transition-colors text-left min-h-[44px] truncate';
+          // ボタンの色変更（白ベース）
+          btn.className = 'bg-white border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors text-left min-h-[44px] truncate shadow-sm';
           btn.textContent = h.name || '';
           btn.addEventListener('click', () => setHorseFilterByName(h.name || ''));
           grid.appendChild(btn);
@@ -594,14 +562,12 @@
 
       const isDefaultView = !selectedHorseName && !showStarOnly && !searchVal;
 
-      // フィルタ条件が変わったら、デフォルト時の表示件数を初期化
       const filterKey = getFilterKey(searchVal);
       if (filterKey !== lastFilterKey) {
         lastFilterKey = filterKey;
         displayLimit = DEFAULT_LIMIT;
       }
 
-      // ヒント表示
       if (listHint) {
         if (isDefaultView) {
           listHint.textContent = `直近のレース（最新順）`;
@@ -614,13 +580,11 @@
         }
       }
 
-      // 先頭へボタンは、ある程度スクロールしたら出す
       if (scrollTopBtn) {
         const show = window.scrollY > 600;
         scrollTopBtn.classList.toggle('hidden', !show);
       }
 
-      // 空にして作り直し（件数制限するのでコストは抑えられる）
       listEl.innerHTML = '';
       emptyEl.classList.add('hidden');
 
@@ -632,7 +596,6 @@
         const lim = (displayLimit === Infinity) ? total : Math.min(displayLimit, total);
         visible = racesSorted.slice(0, lim);
       } else {
-        // 絞り込み表示は「全部出す」方針
         const keywords = searchVal ? searchVal.split(/\s+/).filter(Boolean) : [];
 
         const filtered = [];
@@ -641,7 +604,6 @@
           if (showStarOnly && race.star !== true) continue;
 
           if (keywords.length) {
-            // 事前に作ったsearchTextを使う
             let ok = true;
             const t = race.searchText || '';
             for (const k of keywords) {
@@ -664,7 +626,6 @@
         return;
       }
 
-      // もっと見るUI
       if (isDefaultView && total > visible.length) {
         moreWrap?.classList.remove('hidden');
         if (shownCount) shownCount.textContent = `${visible.length} / ${total}`;
@@ -683,21 +644,21 @@
         const placeName = (!isForeign && parsed) ? (PLACE_MAP[parsed.place] || '') : '海外';
         const rNum = (!isForeign && parsed) ? (parseInt(parsed.race, 10) + 'R') : '';
 
+        // 馬名チップ：白背景用に色調整
         const horseChipHtml = showHorseLabelInRows
           ? `<button type="button"
-                class="horse-chip text-xs px-2 py-0.5 rounded-full border border-gray-600 ml-1 text-gray-200 hover:border-green-500 hover:text-green-300 transition-colors"
+                class="horse-chip text-xs px-2 py-0.5 rounded-full border border-gray-300 ml-1 text-gray-600 hover:border-green-500 hover:text-green-600 transition-colors bg-gray-50"
                 data-horse="${escapeHtml(race.horseName)}">${escapeHtml(race.horseName)}</button>`
           : '';
 
         const netkeibaUrl = (/^\d{12}$/.test(String(race.id))) ? getNetkeibaRaceUrl(String(race.id)) : null;
 
         const row = document.createElement('div');
-        row.className = "bg-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800 hover:border-green-500/50 transition-colors shadow-sm gap-3";
-
+        // カードを白に変更、影と枠線で立体感を出す
+        row.className = "bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-200 hover:border-green-400 transition-colors shadow-sm gap-3";
         
         const profile = getQualityProfile(race.date, race.raceName);
 
-        // ボタン描画ヘルパ
         function btnHtml(href, title, classes, innerHtml, disabled, dim) {
           const baseCls = `btn-icon ${classes} ${dim ? 'opacity-50' : ''} ${disabled ? 'opacity-30 pointer-events-none' : ''}`;
           if (disabled || !href) {
@@ -708,27 +669,19 @@
 
         let linksHtml = '';
         if (parsed && !parsed.isForeign) {
-          // レース：HD / SD 両方（どっちか無い場合は薄く&無効）
           const raceHdUrl = buildViewerUrl(parsed, race.date, 'race', profile.race.hd);
           const raceSdUrl = buildViewerUrl(parsed, race.date, 'race', profile.race.sd);
-
           const paddockHdUrl = buildViewerUrl(parsed, race.date, 'paddock', profile.paddock.hd);
           const paddockSdUrl = buildViewerUrl(parsed, race.date, 'paddock', profile.paddock.sd);
-
           const timeUrl = buildViewerUrl(parsed, race.date, 'time', profile.time.hd);
           const multiUrl = buildViewerUrl(parsed, race.date, 'multi', profile.multi.hd);
-
-          // パトロール：基本は hd を出す。古いところで sd(=q2) がある可能性があればサブも出せる
           const patrolUrl = buildViewerUrl(parsed, race.date, 'patrol', profile.patrol.hd);
-
           const netkeibaUrl = (/^\d{12}$/.test(String(race.id))) ? getNetkeibaRaceUrl(String(race.id)) : null;
 
-          // 薄くするルール：
-          // - HDがあるときはSDを薄く（でも押せる）
-          // - HDが無い（=SDのみ）のときはHDを薄く&無効、SDは通常
           const raceSdDim = !!raceHdUrl && !!raceSdUrl;
           const padSdDim = !!paddockHdUrl && !!paddockSdUrl;
 
+          // ボタン色を白背景で見やすく調整（900番台→600/700番台中心に）
           linksHtml = `
             <div class="flex items-center gap-2 mt-1 sm:mt-0">
               ${btnHtml(netkeibaUrl, 'netkeiba', 'btn-netkeiba', '<i class="fas fa-arrow-up-right-from-square text-xs"></i>', !netkeibaUrl, false)}
@@ -736,20 +689,20 @@
               ${btnHtml(raceHdUrl, 'レース(高画質)', 'btn-race', '<i class="fas fa-play text-xs"></i>', !raceHdUrl, false)}
               ${btnHtml(raceSdUrl, 'レース(SD)', 'btn-race', '<span class="text-[10px] font-bold">SD</span>', !raceSdUrl, raceSdDim)}
 
-              ${btnHtml(paddockHdUrl, 'パドック(高画質)', 'bg-green-900 text-green-200 hover:bg-green-800', '<i class="fas fa-horse text-xs"></i>', !paddockHdUrl, false)}
-              ${btnHtml(paddockSdUrl, 'パドック(SD)', 'bg-green-800 text-green-200 hover:bg-green-700', '<span class="text-[10px] font-bold">SD</span>', !paddockSdUrl, padSdDim)}
+              ${btnHtml(paddockHdUrl, 'パドック(高画質)', 'bg-green-600 text-white hover:bg-green-500', '<i class="fas fa-horse text-xs"></i>', !paddockHdUrl, false)}
+              ${btnHtml(paddockSdUrl, 'パドック(SD)', 'bg-green-600 text-white hover:bg-green-500', '<span class="text-[10px] font-bold">SD</span>', !paddockSdUrl, padSdDim)}
 
-              ${patrolUrl ? btnHtml(patrolUrl, 'パトロール', 'bg-gray-700 text-gray-200 hover:bg-gray-600', '<i class="fas fa-video text-xs"></i>', false, false) : ''}
+              ${patrolUrl ? btnHtml(patrolUrl, 'パトロール', 'bg-gray-500 text-white hover:bg-gray-400', '<i class="fas fa-video text-xs"></i>', false, false) : ''}
 
-              ${multiUrl ? btnHtml(multiUrl, (profile.multi.hd && profile.multi.hd <= 2) ? 'マルチ(SD)' : 'マルチカメラ', 'bg-purple-900 text-purple-200 hover:bg-purple-800', '<i class="fas fa-border-all text-xs"></i>', false, false) : ''}
+              ${multiUrl ? btnHtml(multiUrl, (profile.multi.hd && profile.multi.hd <= 2) ? 'マルチ(SD)' : 'マルチカメラ', 'bg-purple-600 text-white hover:bg-purple-500', '<i class="fas fa-border-all text-xs"></i>', false, false) : ''}
 
-              ${timeUrl ? btnHtml(timeUrl, '時計付', 'bg-indigo-900 text-indigo-200 hover:bg-indigo-800', '<i class="fas fa-stopwatch text-xs"></i>', false, false) : ''}
+              ${timeUrl ? btnHtml(timeUrl, '時計付', 'bg-indigo-600 text-white hover:bg-indigo-500', '<i class="fas fa-stopwatch text-xs"></i>', false, false) : ''}
             </div>
           `;
         } else {
           linksHtml = `
             <div class="flex items-center gap-2 mt-1 sm:mt-0 opacity-60 select-none">
-              <span class="text-xs text-gray-500"><i class="fas fa-ban mr-1"></i>映像リンクなし</span>
+              <span class="text-xs text-gray-400"><i class="fas fa-ban mr-1"></i>映像リンクなし</span>
             </div>
           `;
         }
@@ -758,8 +711,8 @@
         row.innerHTML = `
           <div class="flex-1 w-full sm:w-auto">
             <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <span class="text-gray-400 text-xs font-mono">${escapeHtml(race.date.replace(/-/g, '/'))}</span>
-              <span class="text-gray-500 text-xs font-bold">${escapeHtml(placeName)}${rNum ? escapeHtml(rNum) : ''}</span>
+              <span class="text-gray-500 text-xs font-mono">${escapeHtml(race.date.replace(/-/g, '/'))}</span>
+              <span class="text-gray-600 text-xs font-bold">${escapeHtml(placeName)}${rNum ? escapeHtml(rNum) : ''}</span>
               ${horseChipHtml}
             </div>
 
@@ -776,9 +729,9 @@
                 }
                 return '';
               })()}
-              <span class="text-white font-bold text-lg leading-tight">
+              <span class="text-gray-900 font-bold text-lg leading-tight">
                 ${escapeHtml(race.raceName)}
-                ${race.star === true ? ' <i class="fas fa-star text-yellow-400 ml-1"></i>' : ''}
+                ${race.star === true ? ' <i class="fas fa-star text-yellow-500 ml-1"></i>' : ''}
               </span>
             </div>
           </div>
@@ -813,7 +766,6 @@
         const horses = await res.json();
         horsesData = Array.isArray(horses) ? horses : (horses && Array.isArray(horses.horses) ? horses.horses : []);
 
-        // horsesData -> rawData（horseNameを付けたレース配列）
         rawData = (horsesData || []).flatMap(h => {
           const horseName = h.name;
           const rs = Array.isArray(h.races) ? h.races : [];
@@ -836,7 +788,7 @@
           emptyEl.classList.remove('hidden');
           emptyEl.innerHTML = `
             <p class="text-sm">データの読み込みに失敗しました</p>
-            <p class="text-xs mt-2 text-gray-500">
+            <p class="text-xs mt-2 text-gray-400">
               ※ file:// で開いとる場合は fetch が失敗することがあるけぇ、
               ローカルサーバ（例: VS Code Live Server / python -m http.server）で開いてみてね。
             </p>`;
@@ -847,7 +799,6 @@
     function init() {
       showLoading(true, '一覧を準備中…');
 
-      // 全件を一度だけ加工して、検索用テキストも作る
       const tmp = rawData.map(item => {
         const parsed = parseNetkeibaID(item.id);
         const placeName = (!parsed.isForeign) ? (PLACE_MAP[parsed.place] || '') : '海外';
@@ -855,17 +806,12 @@
         return { ...item, parsed, searchText };
       });
 
-      // ソートは一回だけ（以後はこの順でフィルタ）
       racesSorted = tmp.sort((a, b) => String(b.date).localeCompare(String(a.date)));
 
-      // UI初期化
       updateSelectedHorseUI();
       updateStarToggleUI();
-
-      // Event wiring
       wireEvents();
 
-      // 初回描画
       requestAnimationFrame(() => {
         renderList();
         showLoading(false);
@@ -873,7 +819,6 @@
     }
 
     function wireEvents() {
-      // 馬選択
       document.getElementById('toggleHorsePickerBtn')?.addEventListener('click', () => {
         if (horsePickerOpen) closeHorsePicker();
         else openHorsePicker();
@@ -881,26 +826,22 @@
       document.getElementById('closeHorsePickerBtn')?.addEventListener('click', closeHorsePicker);
       document.getElementById('horsePickerBackdrop')?.addEventListener('click', closeHorsePicker);
 
-      // ESCで閉じる
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && horsePickerOpen) closeHorsePicker();
       });
 
-      // ☆フィルタ
       document.getElementById('starToggleBtn')?.addEventListener('click', () => {
         showStarOnly = !showStarOnly;
         updateStarToggleUI();
         scheduleRender(true);
       });
 
-      // 馬フィルタ解除
       document.getElementById('clearHorseBtn')?.addEventListener('click', clearHorseFilter);
 
-      // 検索（debounce + IME）
       const si = document.getElementById('searchInput');
       if (si) {
         si.addEventListener('input', () => {
-          if (isComposing) return; // 変換中は無視
+          if (isComposing) return;
           scheduleRender(false);
         });
 
@@ -910,12 +851,10 @@
 
         si.addEventListener('compositionend', () => {
           isComposing = false;
-          // 変換確定のタイミングで反映
           scheduleRender(false);
         });
       }
 
-      // もっと見る
       document.getElementById('moreBtn')?.addEventListener('click', () => {
         displayLimit = (displayLimit === Infinity) ? Infinity : (displayLimit + MORE_STEP);
         renderList();
@@ -926,12 +865,10 @@
         renderList();
       });
 
-      // 先頭へ
       document.getElementById('scrollTopBtn')?.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
-      // スクロールに応じて「先頭へ」ボタン制御
       window.addEventListener('scroll', () => {
         const btn = document.getElementById('scrollTopBtn');
         if (!btn) return;
@@ -939,30 +876,27 @@
       }, { passive: true });
     }
 
-    // Start
     loadData();
   </script>
 
-  <!-- Footer（固定） -->
-  <footer id="appFooter" class="fixed inset-x-0 bottom-0 z-50 bg-[#1a1a1a]/95 backdrop-blur border-t border-gray-700">
+  <footer id="appFooter" class="fixed inset-x-0 bottom-0 z-50 bg-white/95 backdrop-blur border-t border-gray-200">
     <div class="max-w-4xl mx-auto px-4 md:px-8 py-3">
       <div class="flex items-center gap-2 w-full">
 
         <div class="relative flex-1">
-          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
           <input
             type="text"
             id="searchInput"
             placeholder="検索 (レース名など)"
-            class="w-full bg-gray-800 border border-gray-700 rounded-xl pl-9 pr-3 py-2 text-sm text-gray-200 focus:border-green-500 placeholder-gray-600 transition-colors"
+            class="w-full bg-gray-100 border border-gray-200 rounded-xl pl-9 pr-3 py-2 text-sm text-gray-800 focus:border-green-500 placeholder-gray-400 transition-colors"
             autocomplete="off"
           />
         </div>
 
-        <!-- ☆ と 馬選択を左右入れ替え（☆を左、馬選択を右） -->
         <button
           id="starToggleBtn"
-          class="btn-icon bg-gray-800 border border-gray-700 text-sm text-gray-200 hover:border-gray-600"
+          class="btn-icon bg-white border border-gray-200 text-sm text-gray-500 hover:border-gray-300"
           type="button"
           title="お気に入りのみ"
           aria-label="お気に入りのみ"
@@ -973,23 +907,23 @@
 
         <button
           id="toggleHorsePickerBtn"
-          class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors flex items-center gap-1 whitespace-nowrap"
+          class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-600 hover:border-gray-300 transition-colors flex items-center gap-1 whitespace-nowrap"
           type="button"
           title="馬を選ぶ"
           aria-label="馬を選ぶ"
           aria-expanded="false"
         >
           <i class="fas fa-horse"></i>
-          <i id="horsePickerChevron" class="fas fa-chevron-up text-[10px] text-gray-500"></i>
+          <i id="horsePickerChevron" class="fas fa-chevron-up text-[10px] text-gray-400"></i>
         </button>
 
-        <div id="selectedHorseBadge" class="text-xs text-gray-400 hidden items-center whitespace-nowrap">
+        <div id="selectedHorseBadge" class="text-xs text-gray-500 hidden items-center whitespace-nowrap">
           <span id="selectedHorseName"></span>
         </div>
 
         <button
           id="clearHorseBtn"
-          class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-300 hover:border-gray-600 transition-colors hidden whitespace-nowrap"
+          class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-600 hover:border-gray-300 transition-colors hidden whitespace-nowrap"
           type="button"
           aria-label="馬フィルター解除"
           title="馬フィルター解除"
