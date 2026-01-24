@@ -403,7 +403,8 @@
       const dateClean = (dateStr || '').replace(/-/g, '');
       const ym = yyyymmFromDate(dateStr) || 0;
       const yy = parsed.year.substring(2, 4);
-      const p = parseInt(parsed.place, 10).toString();
+      const pNum = parseInt(parsed.place, 10);
+      const p = (pNum >= 10) ? pNum.toString(16) : pNum.toString();
 
       const kNum = parseInt(parsed.kai, 10);
       const k = (kNum >= 10) ? kNum.toString(16) : kNum.toString();
