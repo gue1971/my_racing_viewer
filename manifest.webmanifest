@@ -1,7 +1,7 @@
 {
   "name": "My Racing Viewer",
   "short_name": "レース動画",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "theme_color": "#ffffff",
