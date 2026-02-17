@@ -12,7 +12,10 @@ const DEC_EUC = new TextDecoder("euc-jp");
 
 const OLD_ALIAS = new Map([
   ["日本ダービー", "東京優駿"],
+  ["GI日本ダービー", "東京優駿"],
   ["オークス", "優駿牝馬"],
+  ["GIオークス", "優駿牝馬"],
+  ["GIマイルチャンピオンシップ", "マイルチャンピオンS"],
   ["スプリンターズＳ", "スプリンターズS"],
   ["フェブラリーＳ", "フェブラリーS"],
   ["ＮＨＫマイルＣ", "NHKマイルC"],
@@ -54,6 +57,14 @@ function toIsoDate(s, year) {
   return `${year}-${mm}-${dd}`;
 }
 
+function toIsoDateFromJapaneseMd(s, year) {
+  const m = String(s || "").match(/(\d{1,2})\s*月\s*(\d{1,2})\s*日/);
+  if (!m) return null;
+  const mm = m[1].padStart(2, "0");
+  const dd = m[2].padStart(2, "0");
+  return `${year}-${mm}-${dd}`;
+}
+
 async function fetchText(url, decoder) {
   const res = await fetch(url, {
     headers: {
@@ -87,6 +98,25 @@ function parseJraReplayOld(html, year) {
     if (/障|グランドジャンプ|大障害/.test(raceName)) continue;
     const date = toIsoDate(dateMd, year);
     if (!date) continue;
+    rows.push({ year, date, raceName, winner });
+  }
+  return rows;
+}
+
+function parseJraReplayNew(html, year) {
+  const rows = [];
+  for (const m of html.matchAll(/<tr class="yellow-x">([\s\S]*?)<\/tr>/gi)) {
+    const tr = m[1];
+    const dateCell = (tr.match(/<td class="date">([\s\S]*?)<\/td>/i) || [])[1] || "";
+    const raceCell = (tr.match(/<td class="race">([\s\S]*?)<\/td>/i) || [])[1] || "";
+    const winnerCell = (tr.match(/<td class="winner">([\s\S]*?)<\/td>/i) || [])[1] || "";
+    const resultHref = (tr.match(/<td class="result">[\s\S]*?<a href="([^"]+)"/i) || [])[1] || "";
+
+    const date = toIsoDateFromJapaneseMd(stripTags(dateCell), year);
+    const raceName = stripTags(raceCell);
+    const winner = stripTags(winnerCell);
+    if (!date || !raceName || !winner || !resultHref) continue;
+    if (/障|グランドジャンプ|大障害/.test(raceName)) continue;
     rows.push({ year, date, raceName, winner });
   }
   return rows;
@@ -186,15 +216,23 @@ function writeHorsesData(data) {
 }
 
 async function main() {
+  const startYear = Number(process.argv[2] || 2001);
+  const endYear = Number(process.argv[3] || 2005);
+  if (!Number.isFinite(startYear) || !Number.isFinite(endYear) || startYear > endYear) {
+    throw new Error("Usage: node scripts/add_g1_winners_2001_2005.mjs [startYear] [endYear]");
+  }
+
   const data = readHorsesData();
   const byHorseId = new Set(data.map((h) => String(h?.horseId || "")));
   const byName = new Set(data.map((h) => norm(h?.name)));
 
   const winners = [];
-  for (let year = 2001; year <= 2005; year++) {
+  for (let year = startYear; year <= endYear; year++) {
     const replayUrl = `https://www.jra.go.jp/datafile/seiseki/replay/${year}/g1.html`;
     const replayHtml = await fetchText(replayUrl, DEC_SJIS);
-    winners.push(...parseJraReplayOld(replayHtml, year));
+    const oldRows = parseJraReplayOld(replayHtml, year);
+    const newRows = parseJraReplayNew(replayHtml, year);
+    winners.push(...(newRows.length > 0 ? newRows : oldRows));
   }
 
   const uniqueByName = new Map();
@@ -205,7 +243,7 @@ async function main() {
   }
 
   const targetWinners = [...uniqueByName.values()].filter((name) => !byName.has(norm(name)));
-  console.log(`target winners (missing in horsesData): ${targetWinners.length}`);
+  console.log(`target winners ${startYear}-${endYear} (missing in horsesData): ${targetWinners.length}`);
 
   const datePageCache = new Map();
   const added = [];
@@ -269,7 +307,7 @@ async function main() {
   }
 
   writeHorsesData(data);
-  console.log(`done. added=${added.length}`);
+  console.log(`done ${startYear}-${endYear}. added=${added.length}`);
 }
 
 main().catch((e) => {
