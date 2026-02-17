@@ -516,7 +516,7 @@
       panel.innerHTML = `
         <div class="flex items-center justify-between gap-3">
           <div>
-            <div class="text-sm font-bold text-slate-800">2020〜2025 GI勝馬(引退馬) 登録状況</div>
+            <div class="text-sm font-bold text-slate-800">2001〜2025 JRA平地GI勝馬 登録状況</div>
             <div class="text-xs text-slate-500 mt-0.5">${matched} / ${total} (${ratio}%)</div>
           </div>
           <div class="${missing.length ? 'text-rose-600 bg-rose-50 border-rose-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200'} text-xs font-bold px-2.5 py-1 rounded-full border">
@@ -941,7 +941,7 @@
 
         const [horsesRes, checklistRes] = await Promise.all([
           fetch('horsesData.json', { cache: getFetchCacheMode() }),
-          fetch('retired_g1_winners_2020_2025.json', { cache: getFetchCacheMode() }).catch(() => null)
+          fetch('g1_winners_2001_2025.json', { cache: getFetchCacheMode() }).catch(() => null)
         ]);
         if (!horsesRes.ok) throw new Error(`Failed to load horsesData.json: ${horsesRes.status}`);
 

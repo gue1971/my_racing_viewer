@@ -1,0 +1,1101 @@
+[
+  {
+    "name": "アーバンシック",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "アーモンドアイ",
+    "horseId": "2015104961",
+    "firstWinYear": 2018,
+    "lastWinYear": 2020,
+    "winCount": 8
+  },
+  {
+    "name": "アエロリット",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "アカイイト",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "アカイトリノムスメ",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "アスクビクターモア",
+    "horseId": "2019104706",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "アスコリピチェーノ",
+    "horseId": "",
+    "firstWinYear": 2023,
+    "lastWinYear": 2025,
+    "winCount": 2
+  },
+  {
+    "name": "アドマイヤズーム",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "アドマイヤマーズ",
+    "horseId": "2016104422",
+    "firstWinYear": 2018,
+    "lastWinYear": 2019,
+    "winCount": 2
+  },
+  {
+    "name": "アドマイヤリード",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "アルアイン",
+    "horseId": "2014106046",
+    "firstWinYear": 2017,
+    "lastWinYear": 2019,
+    "winCount": 2
+  },
+  {
+    "name": "アルマヴェローチェ",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "イクイノックス",
+    "horseId": "2019105219",
+    "firstWinYear": 2022,
+    "lastWinYear": 2023,
+    "winCount": 5
+  },
+  {
+    "name": "インティ",
+    "horseId": "",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "インディチャンプ",
+    "horseId": "2015104688",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 2
+  },
+  {
+    "name": "ヴィブロス",
+    "horseId": "",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "ウインカーネリアン",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "ヴェラアズール",
+    "horseId": "",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "エネルジコ",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "エフフォーリア",
+    "horseId": "2018105027",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 3
+  },
+  {
+    "name": "エポカドーロ",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "エンブロイダリー",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 2
+  },
+  {
+    "name": "カヴァレリッツォ",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "カフェファラオ",
+    "horseId": "2017110151",
+    "firstWinYear": 2021,
+    "lastWinYear": 2022,
+    "winCount": 2
+  },
+  {
+    "name": "カムニャック",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "カランダガン",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "キセキ",
+    "horseId": "2014101976",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "キタサンブラック",
+    "horseId": "2012102013",
+    "firstWinYear": 2016,
+    "lastWinYear": 2017,
+    "winCount": 6
+  },
+  {
+    "name": "キラーアビリティ",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "クイーンズリング",
+    "horseId": "",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "グランアレグリア",
+    "horseId": "2016104532",
+    "firstWinYear": 2019,
+    "lastWinYear": 2021,
+    "winCount": 6
+  },
+  {
+    "name": "クリソベリル",
+    "horseId": "2016104458",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "グレナディアガーズ",
+    "horseId": "2018104934",
+    "firstWinYear": 2020,
+    "lastWinYear": 2020,
+    "winCount": 1
+  },
+  {
+    "name": "クロノジェネシス",
+    "horseId": "2016104750",
+    "firstWinYear": 2019,
+    "lastWinYear": 2021,
+    "winCount": 4
+  },
+  {
+    "name": "クロワデュノール",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2025,
+    "winCount": 2
+  },
+  {
+    "name": "ケイアイノーテック",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "ゴールドドリーム",
+    "horseId": "2013106119",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 2
+  },
+  {
+    "name": "コスタノヴァ",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "コントレイル",
+    "horseId": "2017101835",
+    "firstWinYear": 2019,
+    "lastWinYear": 2021,
+    "winCount": 5
+  },
+  {
+    "name": "サークルオブライフ",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "サートゥルナーリア",
+    "horseId": "2016104505",
+    "firstWinYear": 2018,
+    "lastWinYear": 2019,
+    "winCount": 2
+  },
+  {
+    "name": "サウンドトゥルー",
+    "horseId": "",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "サトノアラジン",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "サトノアレス",
+    "horseId": "",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "サトノクラウン",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "サトノダイヤモンド",
+    "horseId": "2013106101",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 2
+  },
+  {
+    "name": "サトノレーヴ",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "サリオス",
+    "horseId": "",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "ジェラルディーナ",
+    "horseId": "2018105081",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "ジオグリフ",
+    "horseId": "2019105056",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "ジャスティンパレス",
+    "horseId": "2019105346",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "ジャスティンミラノ",
+    "horseId": "2021105795",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ジャックドール",
+    "horseId": "2018100274",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "シャフリヤール",
+    "horseId": "2018105165",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "ジャンタルマンタル",
+    "horseId": "",
+    "firstWinYear": 2023,
+    "lastWinYear": 2025,
+    "winCount": 4
+  },
+  {
+    "name": "ジャンダルム",
+    "horseId": "2015110013",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "シャンパンカラー",
+    "horseId": "",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "シュヴァルグラン",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "ジュールポレール",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "ジュエラー",
+    "horseId": "",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "シュネルマイスター",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "ジュンライトボルト",
+    "horseId": "2017105396",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "シンハライト",
+    "horseId": "2013105906",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "スターアニス",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "スターズオンアース",
+    "horseId": "2019104740",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 2
+  },
+  {
+    "name": "スタニングローズ",
+    "horseId": "2019105565",
+    "firstWinYear": 2022,
+    "lastWinYear": 2024,
+    "winCount": 2
+  },
+  {
+    "name": "ステルヴィオ",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "ステレンボッシュ",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ストレイトガール",
+    "horseId": "2009100301",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "スワーヴリチャード",
+    "horseId": "2014106083",
+    "firstWinYear": 2018,
+    "lastWinYear": 2019,
+    "winCount": 2
+  },
+  {
+    "name": "セイウンコウセイ",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "セリフォス",
+    "horseId": "2019104462",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "ソウルスターリング",
+    "horseId": "2014105535",
+    "firstWinYear": 2016,
+    "lastWinYear": 2017,
+    "winCount": 2
+  },
+  {
+    "name": "ソウルラッシュ",
+    "horseId": "2018100382",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ソールオリエンス",
+    "horseId": "2020102899",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "ソダシ",
+    "horseId": "2018105233",
+    "firstWinYear": 2020,
+    "lastWinYear": 2022,
+    "winCount": 3
+  },
+  {
+    "name": "ソングライン",
+    "horseId": "2018105355",
+    "firstWinYear": 2022,
+    "lastWinYear": 2023,
+    "winCount": 3
+  },
+  {
+    "name": "タイトルホルダー",
+    "horseId": "2018103559",
+    "firstWinYear": 2021,
+    "lastWinYear": 2022,
+    "winCount": 3
+  },
+  {
+    "name": "タイムフライヤー",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "タスティエーラ",
+    "horseId": "2020103532",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "ダノンキングリー",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "ダノンザキッド",
+    "horseId": "2018104963",
+    "firstWinYear": 2020,
+    "lastWinYear": 2020,
+    "winCount": 1
+  },
+  {
+    "name": "ダノンスコーピオン",
+    "horseId": "2019103034",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "ダノンスマッシュ",
+    "horseId": "2015102377",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "ダノンデサイル",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ダノンファンタジー",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "ダノンプレミアム",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "ダブルハートボンド",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "タワーオブロンドン",
+    "horseId": "",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "チェルヴィニア",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 2
+  },
+  {
+    "name": "チュウワウィザード",
+    "horseId": "2015104879",
+    "firstWinYear": 2020,
+    "lastWinYear": 2020,
+    "winCount": 1
+  },
+  {
+    "name": "デアリングタクト",
+    "horseId": "2017100720",
+    "firstWinYear": 2020,
+    "lastWinYear": 2020,
+    "winCount": 3
+  },
+  {
+    "name": "ディアドラ",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "ディーマジェスティ",
+    "horseId": "",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "テーオーケインズ",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "テーオーロイヤル",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "テンハッピーローズ",
+    "horseId": "2018104750",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ドウデュース",
+    "horseId": "2019105283",
+    "firstWinYear": 2021,
+    "lastWinYear": 2024,
+    "winCount": 5
+  },
+  {
+    "name": "ドゥラエレーデ",
+    "horseId": "2020103626",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "ドゥレッツァ",
+    "horseId": "",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "ドルチェモア",
+    "horseId": "",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "ナミュール",
+    "horseId": "2019105213",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "ナランフレグ",
+    "horseId": "2016106453",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "ノームコア",
+    "horseId": "",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "ノンコノユメ",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "パンジャタワー",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "ピクシーナイト",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "ビッグアーサー",
+    "horseId": "2011103328",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "ファインニードル",
+    "horseId": "2013100612",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 2
+  },
+  {
+    "name": "ファストフォース",
+    "horseId": "2016102197",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "フィエールマン",
+    "horseId": "2015105075",
+    "firstWinYear": 2018,
+    "lastWinYear": 2020,
+    "winCount": 3
+  },
+  {
+    "name": "ブラストワンピース",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "ブレイディヴェーグ",
+    "horseId": "2020103242",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "ブローザホーン",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ヘデントール",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "ペプチドナイル",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ベラジオオペラ",
+    "horseId": "2020102781",
+    "firstWinYear": 2024,
+    "lastWinYear": 2025,
+    "winCount": 2
+  },
+  {
+    "name": "ペルシアンナイト",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "ポタジェ",
+    "horseId": "2017105376",
+    "firstWinYear": 2022,
+    "lastWinYear": 2022,
+    "winCount": 1
+  },
+  {
+    "name": "マカヒキ",
+    "horseId": "2013105788",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "マスカレードボール",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "マッドクール",
+    "horseId": "2019110020",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ママコチャ",
+    "horseId": "",
+    "firstWinYear": 2023,
+    "lastWinYear": 2023,
+    "winCount": 1
+  },
+  {
+    "name": "マリアライト",
+    "horseId": "2011103832",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "ミスターメロディ",
+    "horseId": "",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "ミッキーアイル",
+    "horseId": "2011103916",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "ミッキーロケット",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "ミュージアムマイル",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 2
+  },
+  {
+    "name": "メイショウタバル",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "メジャーエンブレム",
+    "horseId": "2013105840",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "モーニン",
+    "horseId": "",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "モーリス",
+    "horseId": "2011100655",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "モズアスコット",
+    "horseId": "2014110031",
+    "firstWinYear": 2018,
+    "lastWinYear": 2020,
+    "winCount": 2
+  },
+  {
+    "name": "モズカッチャン",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "モズスーパーフレア",
+    "horseId": "2015110017",
+    "firstWinYear": 2020,
+    "lastWinYear": 2020,
+    "winCount": 1
+  },
+  {
+    "name": "ユーバーレーベン",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "ラヴズオンリーユー",
+    "horseId": "2016104648",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "ラウダシオン",
+    "horseId": "2017105072",
+    "firstWinYear": 2020,
+    "lastWinYear": 2020,
+    "winCount": 1
+  },
+  {
+    "name": "ラッキーライラック",
+    "horseId": "2015105046",
+    "firstWinYear": 2017,
+    "lastWinYear": 2020,
+    "winCount": 4
+  },
+  {
+    "name": "リスグラシュー",
+    "horseId": "2014106220",
+    "firstWinYear": 2018,
+    "lastWinYear": 2019,
+    "winCount": 3
+  },
+  {
+    "name": "リバティアイランド",
+    "horseId": "2020103656",
+    "firstWinYear": 2022,
+    "lastWinYear": 2023,
+    "winCount": 4
+  },
+  {
+    "name": "ルヴァンスレーヴ",
+    "horseId": "2015104189",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "ルガル",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "レイデオロ",
+    "horseId": "2014106201",
+    "firstWinYear": 2017,
+    "lastWinYear": 2018,
+    "winCount": 2
+  },
+  {
+    "name": "レイパパレ",
+    "horseId": "",
+    "firstWinYear": 2021,
+    "lastWinYear": 2021,
+    "winCount": 1
+  },
+  {
+    "name": "レインボーライン",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  },
+  {
+    "name": "レーヌミノル",
+    "horseId": "",
+    "firstWinYear": 2017,
+    "lastWinYear": 2017,
+    "winCount": 1
+  },
+  {
+    "name": "レガレイラ",
+    "horseId": "",
+    "firstWinYear": 2023,
+    "lastWinYear": 2025,
+    "winCount": 3
+  },
+  {
+    "name": "レシステンシア",
+    "horseId": "2017105563",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "レッドファルクス",
+    "horseId": "2011104416",
+    "firstWinYear": 2016,
+    "lastWinYear": 2017,
+    "winCount": 2
+  },
+  {
+    "name": "レモンポップ",
+    "horseId": "2018110015",
+    "firstWinYear": 2023,
+    "lastWinYear": 2024,
+    "winCount": 3
+  },
+  {
+    "name": "ロゴタイプ",
+    "horseId": "2010103783",
+    "firstWinYear": 2016,
+    "lastWinYear": 2016,
+    "winCount": 1
+  },
+  {
+    "name": "ロジャーバローズ",
+    "horseId": "2016106065",
+    "firstWinYear": 2019,
+    "lastWinYear": 2019,
+    "winCount": 1
+  },
+  {
+    "name": "ロブチェン",
+    "horseId": "",
+    "firstWinYear": 2025,
+    "lastWinYear": 2025,
+    "winCount": 1
+  },
+  {
+    "name": "ロマンチックウォリアー",
+    "horseId": "",
+    "firstWinYear": 2024,
+    "lastWinYear": 2024,
+    "winCount": 1
+  },
+  {
+    "name": "ワールドプレミア",
+    "horseId": "2016104854",
+    "firstWinYear": 2019,
+    "lastWinYear": 2021,
+    "winCount": 2
+  },
+  {
+    "name": "ワグネリアン",
+    "horseId": "",
+    "firstWinYear": 2018,
+    "lastWinYear": 2018,
+    "winCount": 1
+  }
+]
