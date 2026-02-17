@@ -310,8 +310,8 @@
     }
 
     function getFetchCacheMode() {
-      const isLocal = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-      return isLocal ? 'no-store' : 'force-cache';
+      // データ更新の反映を優先: 常に最新JSONを取得する
+      return 'no-store';
     }
 
     function parseNetkeibaID(fullId) {
