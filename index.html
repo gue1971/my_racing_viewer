@@ -238,6 +238,13 @@
                 </div>
               </div>
 
+              <div>
+                <h3 class="text-sm font-bold text-slate-600 mb-3 ml-1 uppercase tracking-wider">登録チェック</h3>
+                <div id="retiredCheckPanel" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                  <div class="text-sm text-slate-500">チェック対象を読み込み中…</div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -263,6 +270,8 @@
     // ==========================
     let horsesData = [];
     let rawData = [];
+    let retiredG1Targets = [];
+    let retiredG1Coverage = null;
 
     let racesSorted = [];
     let selectedHorseName = null;
@@ -457,6 +466,65 @@
 
     function getFilterKey(searchVal) {
       return `${selectedHorseName ?? ''}|${showStarOnly ? 1 : 0}|${searchVal}`;
+    }
+
+    function normalizeNameKey(name) {
+      return String(name || '').replace(/\s+/g, '').trim();
+    }
+
+    function computeRetiredCoverage() {
+      const byId = new Set();
+      const byName = new Set();
+      for (const h of (horsesData || [])) {
+        if (h && h.horseId) byId.add(String(h.horseId));
+        if (h && h.name) byName.add(normalizeNameKey(h.name));
+      }
+
+      const rows = (retiredG1Targets || []).map(t => {
+        const id = t && t.horseId ? String(t.horseId) : '';
+        const name = t && t.name ? String(t.name) : '';
+        const ok = (id && byId.has(id)) || (!id && byName.has(normalizeNameKey(name))) || (id && byName.has(normalizeNameKey(name)));
+        return { ...t, matched: ok };
+      });
+
+      const total = rows.length;
+      const matched = rows.filter(r => r.matched).length;
+      const missing = rows.filter(r => !r.matched);
+      retiredG1Coverage = { total, matched, missing, rows };
+    }
+
+    function renderRetiredCoveragePanel() {
+      const panel = document.getElementById('retiredCheckPanel');
+      if (!panel) return;
+
+      if (!retiredG1Coverage) {
+        panel.innerHTML = `<div class="text-sm text-slate-500">チェック対象を読み込めませんでした</div>`;
+        return;
+      }
+
+      const { total, matched, missing } = retiredG1Coverage;
+      const ratio = total > 0 ? Math.round((matched / total) * 100) : 0;
+      const missingHtml = missing.length
+        ? `<div class="mt-3 pt-3 border-t border-slate-200">
+             <div class="text-xs font-bold text-slate-600 mb-2">未登録 (${missing.length})</div>
+             <div class="max-h-36 overflow-y-auto space-y-1">
+               ${missing.map(m => `<div class="text-xs text-rose-700">・${escapeHtml(m.name || m.horseId || '')}</div>`).join('')}
+             </div>
+           </div>`
+        : `<div class="mt-3 pt-3 border-t border-slate-200 text-xs text-emerald-700 font-bold">すべて登録済みです</div>`;
+
+      panel.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm font-bold text-slate-800">2020〜2025 GI勝馬(引退馬) 登録状況</div>
+            <div class="text-xs text-slate-500 mt-0.5">${matched} / ${total} (${ratio}%)</div>
+          </div>
+          <div class="${missing.length ? 'text-rose-600 bg-rose-50 border-rose-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200'} text-xs font-bold px-2.5 py-1 rounded-full border">
+            ${missing.length ? '未登録あり' : '登録完了'}
+          </div>
+        </div>
+        ${missingHtml}
+      `;
     }
 
     // ==========================
@@ -871,11 +939,20 @@
       try {
         showLoading(true, '読み込んでいます');
 
-        const res = await fetch('horsesData.json', { cache: getFetchCacheMode() });
-        if (!res.ok) throw new Error(`Failed to load horsesData.json: ${res.status}`);
+        const [horsesRes, checklistRes] = await Promise.all([
+          fetch('horsesData.json', { cache: getFetchCacheMode() }),
+          fetch('retired_g1_winners_2020_2025.json', { cache: getFetchCacheMode() }).catch(() => null)
+        ]);
+        if (!horsesRes.ok) throw new Error(`Failed to load horsesData.json: ${horsesRes.status}`);
 
-        const horses = await res.json();
+        const horses = await horsesRes.json();
         horsesData = Array.isArray(horses) ? horses : (horses && Array.isArray(horses.horses) ? horses.horses : []);
+        if (checklistRes && checklistRes.ok) {
+          const checklist = await checklistRes.json();
+          retiredG1Targets = Array.isArray(checklist) ? checklist : [];
+        } else {
+          retiredG1Targets = [];
+        }
 
         rawData = (horsesData || []).flatMap(h => {
           const horseName = h.name;
@@ -889,6 +966,9 @@
             ...(r.star === true ? { star: true } : {})
           }));
         }).filter(r => r.id && r.date && r.raceName && r.horseName);
+
+        computeRetiredCoverage();
+        renderRetiredCoveragePanel();
 
         init();
       } catch (e) {
